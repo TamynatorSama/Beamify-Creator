@@ -1,3 +1,5 @@
+import 'package:beamify_creator/views/event_scheduler.dart';
+import 'package:beamify_creator/views/live_stream_setup.dart';
 import 'package:flutter/material.dart';
 
 class CreatorHome extends StatelessWidget {
@@ -33,69 +35,87 @@ class CreatorHome extends StatelessWidget {
           ),
           SizedBox(
             child: Image.asset(
-              'assets/microphones.png',
+              'assets/images/microphones.png',
             ),
           ),
           const SizedBox(
             height: 32,
           ),
-          Container(
-            height: 50,
-            width: 170,
-            decoration: BoxDecoration(
-              color: const Color(0xFFFF7848),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.mic,
-                  color: Colors.white,
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const LiveStreamSetup(),
                 ),
-                SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  'Go live now',
-                  style: TextStyle(
+              );
+            },
+            child: Container(
+              height: 50,
+              width: 170,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFF7848),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.mic,
                     color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
                   ),
-                ),
-              ],
+                  SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    'Go live now',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(
             height: 12,
           ),
-          Container(
-            height: 50,
-            width: 170,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.white),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.calendar_month,
-                  color: Colors.white,
+          GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const EventScheduler(),
                 ),
-                const SizedBox(
-                  width: 4,
-                ),
-                Text(
-                  'Schedule for later',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
-                    fontWeight: FontWeight.w700,
-                    fontSize: 14,
+              );
+            },
+            child: Container(
+              height: 50,
+              width: 170,
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.white),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.calendar_month,
+                    color: Colors.white,
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    width: 4,
+                  ),
+                  Text(
+                    'Schedule for later',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.5),
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
@@ -117,7 +137,9 @@ class CreatorHome extends StatelessWidget {
                 isSelected: true,
               ),
             ),
-            const SizedBox(width: 34,),
+            const SizedBox(
+              width: 34,
+            ),
             SizedBox(
               width: 100,
               child: _customBottomNavItem(
@@ -126,7 +148,9 @@ class CreatorHome extends StatelessWidget {
                 isSelected: false,
               ),
             ),
-            const SizedBox(width: 34,),
+            const SizedBox(
+              width: 34,
+            ),
             SizedBox(
               width: 80,
               child: _customBottomNavItem(

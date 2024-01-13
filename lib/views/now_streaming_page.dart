@@ -140,7 +140,7 @@ Widget _mainCard(BuildContext ctxt) => Container(
           const SizedBox(
             height: 16,
           ),
-          customButton('Go Offline', 137),
+          customButton(txt:'Go Offline',width:  137),
         ],
       ),
     );

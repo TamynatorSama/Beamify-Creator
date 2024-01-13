@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 
-Widget customButton(String txt, [double width = double.maxFinite]) => Container(
+Widget customButton({
+  required String txt,
+  double width = double.maxFinite,
+  bool isPill = false,
+}) =>
+    Container(
       height: 50,
       width: width,
       decoration: BoxDecoration(
         color: const Color(0xFFFF7848),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(isPill ? 32 : 12),
       ),
       alignment: Alignment.center,
       child: Text(
         txt,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontWeight: FontWeight.w700,
+          fontWeight: isPill ? FontWeight.w600 : FontWeight.w700,
           fontSize: 14,
         ),
       ),
     );
 
-
-Widget loginTiles(String img) => Container(
+Widget loginTiles(Widget child) => Container(
       height: 60,
       width: 53,
       decoration: BoxDecoration(
@@ -30,7 +34,7 @@ Widget loginTiles(String img) => Container(
         borderRadius: BorderRadius.circular(12),
       ),
       alignment: Alignment.center,
-      child: Image.asset(img),
+      child: child,
     );
 
 Widget customTextField({

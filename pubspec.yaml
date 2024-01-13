@@ -19,6 +19,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-assets:
+  assets:
   - assets/
-  - assets/onboarding_1.png
+  - assets/images/
+  - assets/images/onboarding_1.png
+  - assets/images/onboarding_2.png

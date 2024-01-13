@@ -1,4 +1,4 @@
-import 'package:beamify_creator/views/settings.dart';
+import 'package:beamify_creator/views/onboarding.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Settings(),
+      home: OnBoarding(),
     );
   }
 }

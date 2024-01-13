@@ -1,3 +1,5 @@
+import 'package:beamify_creator/views/login.dart';
+import 'package:beamify_creator/views/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -51,26 +53,36 @@ class OnBoarding extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.07,
+                  ),
                   Stack(
                     children: [
-                      const Stack(
-                        children: [
-                          CircleAvatar(
-                            radius: 149,
-                            backgroundColor: Colors.red,
-                            backgroundImage:
-                                AssetImage('assets/onboarding_1.png'),
+                      const Align(
+                        alignment: Alignment.center,
+                        child: SizedBox(
+                          height: 300,
+                          child: Stack(
+                            children: [
+                              CircleAvatar(
+                                radius: 149,
+                                backgroundImage: AssetImage(
+                                  'assets/images/onboarding_1.png',
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                bottom: 10,
+                                child: CircleAvatar(
+                                  radius: 37,
+                                  backgroundImage: AssetImage(
+                                    'assets/images/onboarding_2.png',
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: CircleAvatar(
-                              radius: 37,
-                              backgroundColor: Colors.red,
-                              backgroundImage:
-                                  AssetImage('assets/onboarding_2.png'),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                       Column(
                         children: [
@@ -91,7 +103,61 @@ class OnBoarding extends StatelessWidget {
                         ],
                       ),
                     ],
-                  )
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  SvgPicture.string(
+                    '<svg width="190" height="95" viewBox="0 0 190 95" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="Audio track"><rect id="Color stripe 6" x="148.148" y="14.8148" width="11.8519" height="65.9259" fill="#D9B38C"/><rect id="Color stripe 5" x="118.519" width="11.8519" height="94.8148" fill="#95968E"/><rect id="Color stripe 4" x="88.8889" y="29.2594" width="11.8519" height="36.6667" fill="#D9B38C"/><rect id="Color stripe 3" x="59.2592" y="14.8148" width="11.8519" height="65.9259" fill="#95968E"/><rect id="Color stripe 2" x="29.6296" width="11.8519" height="94.8148" fill="#D9B38C"/><rect id="Color stripe 1" y="29.2594" width="11.8519" height="36.6667" fill="#95968E"/><rect id="Color stripe 7" x="178" y="29" width="11.8519" height="36.6667" fill="#95968E"/></g></svg>',
+                  ),
+                  const SizedBox(
+                    height: 2,
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.headphones,
+                        color: Colors.white,
+                        size: 40,
+                      ),
+                      SizedBox(
+                        width: 2,
+                      ),
+                      Text(
+                        'Beamify',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 40,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Text(
+                    'for Creators',
+                    style: TextStyle(
+                      color: Color(0xFFD9B38C),
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 36,
+                  ),
+                  InkWell(
+                    onTap: () {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (_) => const LoginPage(),
+                        ),
+                        (_) => false,
+                      );
+                    },
+                    child: customButton(
+                      txt: 'Start',
+                      width: 158,
+                      isPill: true,
+                    ),
+                  ),
                 ],
               ),
             ),

@@ -125,7 +125,7 @@ class ConfirmAccount extends StatelessWidget {
             const SizedBox(
               height: 33,
             ),
-            customButton('Confirm'),
+            customButton(txt: 'Confirm'),
             const SizedBox(
               height: 4,
             ),

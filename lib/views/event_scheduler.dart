@@ -15,7 +15,12 @@ class EventScheduler extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).padding.top,
             ),
-            _header(),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: _header(),
+            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -88,7 +93,7 @@ class EventScheduler extends StatelessWidget {
                       const SizedBox(
                         height: 22,
                       ),
-                      customButton('Save Schedule', 209),
+                      customButton(txt: 'Save Schedule', width: 209),
                     ],
                   ),
                 ),

@@ -16,7 +16,12 @@ class LiveStreamSetup extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).padding.top,
             ),
-            _header(),
+            GestureDetector(
+              onTap: () {
+                Navigator.of(context).pop();
+              },
+              child: _header(),
+            ),
             _txtField('Event Title*', 'Input Event Title Here'),
             const SizedBox(
               height: 22,
@@ -46,7 +51,7 @@ class LiveStreamSetup extends StatelessWidget {
             const SizedBox(
               height: 22,
             ),
-            customButton('Save and Go Live', 209),
+            customButton(txt: 'Save and Go Live', width: 209),
           ],
         ),
       ),
