@@ -33,11 +33,19 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: const Color(0xFF1D2224),
       resizeToAvoidBottomInset: true,
-      body: Padding(
+      body: 
+      Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
         ),
-        child: Column(
+        child: LayoutBuilder(
+          builder: (context, constraints) => ConstrainedBox(constraints: BoxConstraints(
+            minHeight: constraints.maxHeight,
+          )
+          ,
+          child: IntrinsicHeight(
+            child: SingleChildScrollView(
+              child: Column(
           children: [
             SizedBox(height: MediaQuery.of(context).padding.top),
             SizedBox(
@@ -172,8 +180,13 @@ class _LoginPageState extends State<LoginPage> {
                 ],
               ),
             )
+          
           ],
         ),
+            ),
+          ),
+          ),
+        )
       ),
     );
   }
