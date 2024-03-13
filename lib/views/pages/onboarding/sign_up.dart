@@ -1,6 +1,6 @@
 import 'package:beamify_creator/views/home.dart';
-import 'package:beamify_creator/views/login.dart';
-import 'package:beamify_creator/views/reusables/widgets/auth_screen_widgets.dart';
+import 'package:beamify_creator/views/pages/onboarding/login.dart';
+import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 

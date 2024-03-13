@@ -1,7 +1,71 @@
-import 'package:beamify_creator/views/login.dart';
-import 'package:beamify_creator/views/reusables/widgets/auth_screen_widgets.dart';
+import 'package:beamify_creator/views/pages/onboarding/login.dart';
+import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_svg/svg.dart';
+
+
+
+Future<void> _checkIfIsLogged() async {
+  final accessToken = await FacebookAuth.instance.accessToken;
+  // setState(() {
+  //   _checking = false;
+  // });
+  if (accessToken != null) {
+    print("is Logged:::: ${accessToken.toJson()}");
+    // now you can call to  FacebookAuth.instance.getUserData();
+    final userData = await FacebookAuth.instance.getUserData();
+    // final userData = await FacebookAuth.instance.getUserData(fields: "email,birthday,friends,gender,link");
+    // _accessToken = accessToken;
+    // setState(() {
+    //   _userData = userData;
+    // });
+    print(userData);
+  }
+}
+
+void _printCredentials() {
+  // print(
+  //   _accessToken!.toJson()),
+  // );
+}
+
+Future<void> facebookLogin() async {
+  final LoginResult result = await FacebookAuth.instance
+      .login(); // by default we request the email and the public profile
+
+  // loginBehavior is only supported for Android devices, for ios it will be ignored
+  // final result = await FacebookAuth.instance.login(
+  //   permissions: ['email', 'public_profile', 'user_birthday', 'user_friends', 'user_gender', 'user_link'],
+  //   loginBehavior: LoginBehavior
+  //       .DIALOG_ONLY, // (only android) show an authentication dialog instead of redirecting to facebook app
+  // );
+
+  if (result.status == LoginStatus.success) {
+    final accessToken = result.accessToken;
+    print(accessToken);
+    // get the user data
+    // by default we get the userId, email,name and picture
+    final userData = await FacebookAuth.instance.getUserData();
+    // final userData = await FacebookAuth.instance.getUserData(fields: "email,birthday,friends,gender,link");
+    // _userData = userData;
+    print(userData);
+  } else {
+    print(result.status);
+    print(result.message);
+  }
+
+  // setState(() {
+  //   _checking = false;
+  // });
+}
+
+Future<void> _logOut() async {
+  await FacebookAuth.instance.logOut();
+  // _accessToken = null;
+  // _userData = null;
+  // setState(() {});
+}
 
 class OnBoarding extends StatelessWidget {
   const OnBoarding({super.key});
@@ -45,6 +109,7 @@ class OnBoarding extends StatelessWidget {
               ))
             ],
           ),
+          
           Align(
             alignment: Alignment.center,
             child: Padding(
@@ -145,6 +210,8 @@ class OnBoarding extends StatelessWidget {
                   ),
                   InkWell(
                     onTap: () {
+                      // googleAuth();
+                      // facebookLogin();
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
                           builder: (_) => const LoginPage(),

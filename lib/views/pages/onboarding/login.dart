@@ -1,7 +1,10 @@
-import 'package:beamify_creator/views/sign_up.dart';
+import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/auth_event.dart';
+import 'package:beamify_creator/views/pages/onboarding/sign_up.dart';
 import 'package:beamify_creator/views/home.dart';
-import 'package:beamify_creator/views/reusables/widgets/auth_screen_widgets.dart';
+import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,10 +15,24 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+
+
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1D2224),
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 20.0,
@@ -29,12 +46,12 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
             SizedBox(
-              child: customTextField(hintText: 'Email or Username'),
+              child: customTextField(hintText: 'Email or Username',ctrl: emailController),
             ),
             const SizedBox(
               height: 23,
             ),
-            customTextField(isPassword: true, hintText: 'Password'),
+            customTextField(isPassword: true, hintText: 'Password',ctrl: passwordController),
             const SizedBox(
               height: 29,
             ),
@@ -70,11 +87,12 @@ class _LoginPageState extends State<LoginPage> {
             ),
             InkWell(
               onTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => const CreatorHome(),
-                  ),
-                );
+                context.read<AuthBloc>().add(LoginEvent(email: emailController.text, password: passwordController.text));
+                // Navigator.of(context).push(
+                //   MaterialPageRoute(
+                //     builder: (_) => const CreatorHome(),
+                //   ),
+                // );
               },
               child: customButton(txt: 'Sign in'),
             ),
