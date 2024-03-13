@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_if_null_operators
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class CustomInputField extends StatefulWidget {
   final TextEditingController controller;
@@ -58,7 +59,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
         readOnly: widget.readOnly ?? false,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         obscureText: widget.isPassword ? obscurePassword : false,
-        cursorColor: AppTheme.primaryColor,
+        cursorColor:const  Color(0xffD9B38C),
         onChanged: widget.onChange,
         inputFormatters: widget.formatter,
         validator: widget.validator ??
@@ -69,7 +70,11 @@ class _CustomInputFieldState extends State<CustomInputField> {
               return null;
             },
         decoration: widget.decoration.copyWith(
-            hintStyle: AppTheme.bodyText
+            hintStyle: GoogleFonts.lato(
+    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    fontSize: 16
+  )
                 .copyWith(fontSize: 15, color: const Color(0xff8A8A8A)),
             hintText: widget.hintText,
             contentPadding:
@@ -119,6 +124,10 @@ class _CustomInputFieldState extends State<CustomInputField> {
             enabledBorder: widget.noBorders?InputBorder.none: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: const BorderSide(color: Color(0xffE6E6E6)))),
-        style: AppTheme.bodyText.copyWith(fontWeight: FontWeight.w700));
+        style: GoogleFonts.lato(
+    color: Colors.white,
+    fontWeight: FontWeight.w500,
+    fontSize: 16
+  ).copyWith(fontWeight: FontWeight.w700));
   }
 }
