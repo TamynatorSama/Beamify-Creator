@@ -1,3 +1,5 @@
+import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/auth_event.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
@@ -5,6 +7,7 @@ import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/pages/onboarding/sign_up.dart';
 import 'package:beamify_creator/views/home.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,8 +17,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
-
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
@@ -25,7 +26,6 @@ class _LoginPageState extends State<LoginPage> {
     passwordController.dispose();
     super.dispose();
   }
-
 
   bool rememberMe = false;
 
@@ -52,13 +52,13 @@ class _LoginPageState extends State<LoginPage> {
                             children: [
                               CustomInputField(
                                   hintText: "Email or Username",
-                                  controller: TextEditingController()),
+                                  controller: emailController),
                               const SizedBox(
                                 height: 20,
                               ),
                               CustomInputField(
                                 hintText: "Password",
-                                controller: TextEditingController(),
+                                controller: passwordController,
                                 isPassword: true,
                               ),
                               const SizedBox(
@@ -103,8 +103,12 @@ class _LoginPageState extends State<LoginPage> {
                           CustomButton(
                               text: "Sign in",
                               onTap: () {
-                               Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const CreatorHome()));
+                                context.read<AuthBloc>().add(LoginEvent(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text.trim(),
+                                    ));
+                                //            Navigator.of(context).push(MaterialPageRoute(
+                                // builder: (context) => const CreatorHome()));
                               }),
                           const SizedBox(
                             height: 25,
@@ -152,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                           InkWell(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => const SignUp()));
+                                  builder: (context) => const SignUp()));
                             },
                             child: RichText(
                                 text: TextSpan(

@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class HttpHelper {
   static const String _baseUrl =
-      'https://7eba-102-89-33-184.ngrok-free.app/api';
+      'https://a1d7-102-88-68-92.ngrok-free.app/api';
 
   static Future<HttpResponse> getRequest(String url,
       {String? query, PayloadConverter? converter}) async {
@@ -34,16 +34,15 @@ class HttpHelper {
       {Map<String, dynamic> payload = const {},
       PayloadConverter? converter}) async {
     try {
-      final response = await http
-          .post(Uri.parse(_baseUrl + url),
-              headers: {
-                "content-type": "application/json",
-                // "Authorization": "Bearer ${AuthRepository.token}"
-              },
-              // body: jsonEncode(payload)
-              
-              )
-          .timeout(const Duration(seconds: 60));
+      final response = await http.post(
+        Uri.parse(_baseUrl + url),
+        headers: {
+          "content-type": "application/json",
+          "accept": "application/json"
+          // "Authorization": "Bearer ${AuthRepository.token}"
+        },
+        body: jsonEncode(payload)
+      ).timeout(const Duration(seconds: 60));
 
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
       print(decodedJson);

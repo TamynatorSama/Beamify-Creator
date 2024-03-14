@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:beamify_creator/const.dart';
+// import 'package:beamify_creator/const.dart';
 import 'package:beamify_creator/shared/http_helper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
@@ -41,7 +41,7 @@ class AuthRepository {
 
     if (Platform.isIOS || Platform.isMacOS) {
       googleSignIn = GoogleSignIn(
-        clientId: googleClientId,
+        // clientId: googleClientId,
         scopes: [
           'email',
         ],
