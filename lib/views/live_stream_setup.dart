@@ -1,60 +1,89 @@
+import 'package:beamify_creator/shared/test.dart';
 import 'package:beamify_creator/views/event_scheduler.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class LiveStreamSetup extends StatelessWidget {
+class LiveStreamSetup extends StatefulWidget {
   const LiveStreamSetup({super.key});
+  @override
+  State<LiveStreamSetup> createState() => _LiveStreamSetup();
+}
+
+class _LiveStreamSetup extends State<LiveStreamSetup> {
+  final _localRTCVideoRenderer = RTCVideoRenderer();
+
+  // videoRenderer for remotePeer
+  final _remoteRTCVideoRenderer = RTCVideoRenderer();
+
+  // mediaStream for localPeer
+  
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF1D2224),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).padding.top,
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).padding.top,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: _header(),
+                ),
+                _txtField('Event Title*', 'Input Event Title Here'),
+                const SizedBox(
+                  height: 22,
+                ),
+                dropdownField('Event Category*', 'Event Category e.g Sermon'),
+                const SizedBox(
+                  height: 22,
+                ),
+                _txtField(
+                  'Name of Presenters (Optional)',
+                  'Input Presenters name e.g J.K Biodun',
+                ),
+                const SizedBox(
+                  height: 22,
+                ),
+                dropdownField(
+                  'Microphone Source',
+                  'Select sound input source e.g built-in Mic',
+                ),
+                const SizedBox(
+                  height: 22,
+                ),
+                _txtField(
+                  'Upload Event  Photo (Optional)',
+                  'must be PNG, JPG, JPEG',
+                ),
+                const SizedBox(
+                  height: 22,
+                ),
+                InkWell(
+                  onTap: () {
+                    print("object");
+                    WebRtcTest.startPod("samuel");
+                  },
+                  child: customButton(
+                    txt: 'Save and Go Live',
+                    width: 209,
+                  ),
+                )
+              ],
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: _header(),
-            ),
-            _txtField('Event Title*', 'Input Event Title Here'),
-            const SizedBox(
-              height: 22,
-            ),
-            dropdownField('Event Category*', 'Event Category e.g Sermon'),
-            const SizedBox(
-              height: 22,
-            ),
-            _txtField(
-              'Name of Presenters (Optional)',
-              'Input Presenters name e.g J.K Biodun',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            dropdownField(
-              'Microphone Source',
-              'Select sound input source e.g built-in Mic',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            _txtField(
-              'Upload Event  Photo (Optional)',
-              'must be PNG, JPG, JPEG',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            customButton(txt: 'Save and Go Live', width: 209),
-          ],
-        ),
-      ),
+          )),
     );
   }
 }
