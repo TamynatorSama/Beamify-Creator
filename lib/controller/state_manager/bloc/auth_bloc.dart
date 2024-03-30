@@ -9,6 +9,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LoginEvent>((event, emit) async {
       await repository.login(email: event.email, password: event.password);
     });
+    on<RegisterEvent>((event, emit) async {
+      await repository.register(email: event.email, password: event.password,username: event.username);
+    });
     on<GoogleSignupEvent>((event, emit) async {
       await repository.googleSignUp();
     });

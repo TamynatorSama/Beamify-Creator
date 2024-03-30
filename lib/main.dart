@@ -1,14 +1,22 @@
+import 'dart:io';
+
 import 'package:beamify_creator/controller/repository/auth_repository.dart';
 import 'package:beamify_creator/controller/repository/repositories.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/blocs.dart';
+import 'package:beamify_creator/firebase_options.dart';
+import 'package:beamify_creator/shared/http/http_override.dart';
 import 'package:beamify_creator/views/pages/onboarding/login.dart';
 import 'package:beamify_creator/views/pages/onboarding/onboarding.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  HttpOverrides.global= MyHttpoverrides();
   runApp(
     DevicePreview(
       // enabled: !kReleaseMode,
@@ -18,8 +26,18 @@ void main() {
   );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
+
+  static final mainNavigatorKey = GlobalKey<NavigatorState>();
+
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +45,11 @@ class MainApp extends StatelessWidget {
         providers: repositories,
         child: MultiBlocProvider(
             providers: blocs,
-            child: const MaterialApp(
+            child: MaterialApp(
+              key: MainApp.mainNavigatorKey,
               debugShowCheckedModeBanner: false,
               // onGenerateRoute: ,
-              home: RouteDecipher(),
+              home: const RouteDecipher(),
             )));
   }
 }

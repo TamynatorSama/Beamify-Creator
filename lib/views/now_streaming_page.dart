@@ -1,9 +1,26 @@
+import 'package:beamify_creator/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/svg.dart';
 
-class NowStreamingView extends StatelessWidget {
-  const NowStreamingView({super.key});
+class NowStreamingView extends StatefulWidget {
+  final ISignalling signalling;
+  const NowStreamingView(
+      {super.key, required this.signalling});
+
+  @override
+  State<NowStreamingView> createState() => _NowStreamingView();
+}
+
+class _NowStreamingView extends State<NowStreamingView> {
+  @override
+  void initState() {
+    SchedulerBinding.instance.addPostFrameCallback((_) async {
+      await widget.signalling.createPod();
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,30 +58,30 @@ class NowStreamingView extends StatelessWidget {
 }
 
 Widget _bottomOptions() => const Padding(
-  padding: EdgeInsets.only(left: 62),
-  child: Row(
-    mainAxisAlignment: MainAxisAlignment.spaceAround,
-    children: [
-      Icon(
-        Icons.mic,
-        color: Colors.white,
+      padding: EdgeInsets.only(left: 62),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Icon(
+            Icons.mic,
+            color: Colors.white,
+          ),
+          Icon(
+            Icons.pause_circle,
+            color: Colors.white,
+            size: 56,
+          ),
+          Icon(
+            Icons.share,
+            color: Colors.white,
+          ),
+          Icon(
+            Icons.menu,
+            color: Colors.white,
+          ),
+        ],
       ),
-      Icon(
-        Icons.pause_circle,
-        color: Colors.white,
-        size: 56,
-      ),
-      Icon(
-        Icons.share,
-        color: Colors.white,
-      ),
-      Icon(
-        Icons.menu,
-        color: Colors.white,
-      ),
-    ],
-  ),
-);
+    );
 
 Widget progress() => const SizedBox(
       width: 260,
@@ -140,7 +157,7 @@ Widget _mainCard(BuildContext ctxt) => Container(
           const SizedBox(
             height: 16,
           ),
-          customButton(txt:'Go Offline',width:  137),
+          customButton(txt: 'Go Offline', width: 137),
         ],
       ),
     );
