@@ -23,13 +23,23 @@ class AuthRepository {
         payload: {"email": email, "password": password});
     print(response.message);
   }
-  Future<void> register({required String email, required String password,required String username}) async {
-    HttpResponse response = await HttpHelper.postRequest(
-        "$sectionBaseUrl/register",
-        payload: {"email": email, "password": password,"username":username});
-    print(response.message);
-  }
 
+  Future<HttpResponse> register(
+      {required String email,
+      required String password,
+      required String username,
+      required String firstName,
+      required String lastName
+      }) async {
+    HttpResponse response =
+        await HttpHelper.postRequest("$sectionBaseUrl/register", payload: {
+      "email": email,
+      "first_name": firstName,
+      "last_name": lastName,
+      "password": password, "username": username
+    });
+    return response;
+  }
 
   Future<void> googleSignUp() async {
     GoogleSignIn googleSignIn = GoogleSignIn(

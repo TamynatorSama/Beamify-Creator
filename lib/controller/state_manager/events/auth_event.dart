@@ -12,7 +12,16 @@ class RegisterEvent extends AuthEvent {
   final String email;
   final String password;
   final String username;
-  const RegisterEvent({required this.email, required this.password,required this.username});
+  final String firstName;
+  final String lastName;
+  final Function(String? value)? errorCallback;
+  const RegisterEvent(
+      {required this.email,
+      required this.firstName,
+      required this.password,
+      required this.lastName,
+      required this.username,
+      this.errorCallback});
 }
 
 class GoogleSignupEvent extends AuthEvent {

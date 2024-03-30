@@ -42,7 +42,8 @@ class HttpHelper {
           .timeout(const Duration(seconds: 60));
       print(response.statusCode);
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
-      print(decodedJson);
+
+
       if (response.statusCode == AppStatusCode.successful ||
           response.statusCode == AppStatusCode.created) {
         return SuccessResponse.fromJson(decodedJson);
@@ -50,16 +51,15 @@ class HttpHelper {
       if (response.statusCode == AppStatusCode.validationError) {
         return ValidationError.fromJson(decodedJson);
       }
+      
       return ErrorResponse.defaultError();
     } on SocketException catch (e) {
       print(e.message);
-      print("socket");
       return const HttpResponse(
         status: "Failure",
         message: "No internet connection",
       );
     } catch (e) {
-      print(e);
       return ErrorResponse.defaultError();
     }
   }

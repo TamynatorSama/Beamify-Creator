@@ -26,7 +26,7 @@ class _CustomButtonState extends State<CustomButton> {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () async {
-            if (isLoading) return;
+            if ((widget.isLoading?? isLoading)) return;
             if (widget.onTap != null) {
               setState(() {
                 isLoading = true;
@@ -48,7 +48,7 @@ class _CustomButtonState extends State<CustomButton> {
               ),
               child: Center(
                 child: (widget.isLoading ?? isLoading) ?ConstrainedBox(
-                  constraints: BoxConstraints(maxHeight: 23,maxWidth: 23),
+                  constraints: const BoxConstraints(maxHeight: 23,maxWidth: 23),
                   child: const CircularProgressIndicator(strokeWidth: 5,color:Colors.black,))
               :Text(
                   widget.text,

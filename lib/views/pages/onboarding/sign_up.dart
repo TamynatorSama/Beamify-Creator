@@ -1,10 +1,12 @@
 import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/auth_event.dart';
+import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
+import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
-import 'package:beamify_creator/views/confirm_account.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -18,9 +20,25 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   TextEditingController emailController = TextEditingController();
   TextEditingController usernameController = TextEditingController();
+  TextEditingController lastNameController = TextEditingController();
+  TextEditingController firstNameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmController = TextEditingController();
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    if (kDebugMode) {
+      emailController.text = "dadefemiwa@gmail.com";
+      usernameController.text = "Tamynator";
+      passwordController.text = "Samuelsegun1@";
+      confirmController.text = "Samuelsegun1@";
+     lastNameController.text = "Kolawole";
+  firstNameController.text = "Tamilore";
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +90,20 @@ class _SignUpState extends State<SignUp> {
                               child: Column(
                                 children: [
                                   CustomInputField(
+                                      hintText: "First Name",
+                                      inputType: TextInputType.name,
+                                      controller: firstNameController),
+                                      const SizedBox(
+                                    height: 20,
+                                  ),
+                                      CustomInputField(
+                                      hintText: "Last Name",
+                                      inputType: TextInputType.name,
+                                      controller: lastNameController),
+                                      const SizedBox(
+                                    height: 20,
+                                  ),
+                                  CustomInputField(
                                       hintText: "Email",
                                       inputType: TextInputType.emailAddress,
                                       controller: emailController),
@@ -117,16 +149,30 @@ class _SignUpState extends State<SignUp> {
                           const SizedBox(
                             height: 15,
                           ),
-                          CustomButton(
-                              text: "Sign up",
-                              onTap: () {
-                                if (_formKey.currentState!.validate()) {
-                                  context.read<AuthBloc>().add(RegisterEvent(email: emailController.text.trim(), password: passwordController.text,username: usernameController.text));
-                                  // Navigator.of(context).push(MaterialPageRoute(
-                                  //     builder: (context) =>
-                                  //         const ConfirmAccount()));
-                                }
-                              }),
+                          BlocBuilder<AuthBloc,AuthState>(
+                            builder: (context,controller) {
+                              return CustomButton(
+                                  text: "Sign up",
+                                  isLoading: controller.isLoading,
+                                  onTap: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      context.read<AuthBloc>().add(RegisterEvent(
+                                          email: emailController.text.trim(),
+                                          firstName: firstNameController.text,
+                                          lastName: lastNameController.text,
+                                          password: passwordController.text,
+                                          username: usernameController.text,
+                                          errorCallback: (value)=>showErrorFeedback(context,message: value)
+                                          ),
+                                        
+                                          );
+                                      // Navigator.of(context).push(MaterialPageRoute(
+                                      //     builder: (context) =>
+                                      //         const ConfirmAccount()));
+                                    }
+                                  });
+                            }
+                          ),
                           const SizedBox(
                             height: 25,
                           ),
