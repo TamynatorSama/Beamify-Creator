@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:beamify_creator/shared/http/http_helper.dart';
 // import 'package:beamify_creator/const.dart';
 import 'package:beamify_creator/shared/http_helper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -8,6 +9,7 @@ import 'package:flutter/foundation.dart';
 class AuthRepository {
   static bool hasOpendApp = false;
   static String? _token;
+  static String sectionBaseUrl = "auth";
 
   static String get token => _token ?? "";
 
@@ -16,13 +18,29 @@ class AuthRepository {
   }
 
   Future<void> login({required String email, required String password}) async {
-    HttpResponse response = await HttpHelper.postRequest("/login",
+    print("object");
+    HttpResponse response = await HttpHelper.postRequest(
+        "$sectionBaseUrl/login",
         payload: {"email": email, "password": password});
-    print(response);
+    print(response.message);
   }
 
-  Future<void> register(
-      {required String email, required String password}) async {}
+  Future<HttpResponse> register(
+      {required String email,
+      required String password,
+      required String username,
+      required String firstName,
+      required String lastName
+      }) async {
+    HttpResponse response =
+        await HttpHelper.postRequest("$sectionBaseUrl/register", payload: {
+      "email": email,
+      "first_name": firstName,
+      "last_name": lastName,
+      "password": password, "username": username
+    });
+    return response;
+  }
 
   Future<void> googleSignUp() async {
     GoogleSignIn googleSignIn = GoogleSignIn(

@@ -1,61 +1,102 @@
+import 'package:beamify_creator/repository/signalling/firebase_signalling.dart';
+import 'package:beamify_creator/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/views/event_scheduler.dart';
+import 'package:beamify_creator/views/now_streaming_page.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
 
-class LiveStreamSetup extends StatelessWidget {
+class LiveStreamSetup extends StatefulWidget {
   const LiveStreamSetup({super.key});
+  @override
+  State<LiveStreamSetup> createState() => _LiveStreamSetup();
+}
+
+class _LiveStreamSetup extends State<LiveStreamSetup> {
+  late ISignalling signalling;
+
+  @override
+  void initState() {
+    signalling = FirebaseSignalling();
+    // SchedulerBinding.instance.addPostFrameCallback((_) async {
+    //   await widget.signalling.createPod();
+    // });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1D2224),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).padding.top,
-            ),
-            GestureDetector(
-              onTap: () {
-                Navigator.of(context).pop();
-              },
-              child: _header(),
-            ),
-            _txtField('Event Title*', 'Input Event Title Here'),
-            const SizedBox(
-              height: 22,
-            ),
-            dropdownField('Event Category*', 'Event Category e.g Sermon'),
-            const SizedBox(
-              height: 22,
-            ),
-            _txtField(
-              'Name of Presenters (Optional)',
-              'Input Presenters name e.g J.K Biodun',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            dropdownField(
-              'Microphone Source',
-              'Select sound input source e.g built-in Mic',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            _txtField(
-              'Upload Event  Photo (Optional)',
-              'must be PNG, JPG, JPEG',
-            ),
-            const SizedBox(
-              height: 22,
-            ),
-            customButton(txt: 'Save and Go Live', width: 209),
-          ],
-        ),
-      ),
-    );
+        backgroundColor: const Color(0xFF1D2224),
+        body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).padding.top,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: _header(),
+                      ),
+                      _txtField('Event Title*', 'Input Event Title Here'),
+                      const SizedBox(
+                        height: 22,
+                      ),
+                      dropdownField(
+                          'Event Category*', 'Event Category e.g Sermon'),
+                      const SizedBox(
+                        height: 22,
+                      ),
+                      _txtField(
+                        'Name of Presenters (Optional)',
+                        'Input Presenters name e.g J.K Biodun',
+                      ),
+                      const SizedBox(
+                        height: 22,
+                      ),
+                      dropdownField(
+                        'Microphone Source',
+                        'Select sound input source e.g built-in Mic',
+                      ),
+                      const SizedBox(
+                        height: 22,
+                      ),
+                      _txtField(
+                        'Upload Event  Photo (Optional)',
+                        'must be PNG, JPG, JPEG',
+                      ),
+                      const SizedBox(
+                        height: 22,
+                      ),
+                      InkWell(
+                        onTap: () async{
+                          await signalling.openUserMedia().then((_) => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => NowStreamingView(
+                                        signalling: signalling,
+                                      ))));
+                          
+                          // WebRtcTest.startPod("samuel");
+                        },
+                        child: customButton(
+                          txt: 'Save and Go Live',
+                          width: 209,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+                // RTCVideoView(
+                //   WebRtcTest.localRTCVideoRenderer
+                // )
+              ],
+            )));
   }
 }
 

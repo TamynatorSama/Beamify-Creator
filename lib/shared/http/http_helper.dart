@@ -2,24 +2,19 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:beamify_creator/controller/repository/auth_repository.dart';
+import 'package:beamify_creator/shared/http/app_status_code.dart';
 import 'package:http/http.dart' as http;
 
 class HttpHelper {
-  static const String _baseUrl =
-      'https://a1d7-102-88-68-92.ngrok-free.app/api';
+  static const String _baseUrl = 'https://Beamify.stream/api/';
 
-  static Future<HttpResponse> getRequest(String url,
-      {String? query, PayloadConverter? converter}) async {
+  static Future<HttpResponse> getRequest(String url, {String? query}) async {
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
         "Authorization": "Bearer ${AuthRepository.token}"
       }).timeout(const Duration(seconds: 60));
 
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
-
-      if (converter != null) {
-        return SuccessResponse.fromJson(decodedJson).withConverter(converter);
-      }
 
       return SuccessResponse.fromJson(decodedJson);
     } on SocketException {
@@ -30,35 +25,41 @@ class HttpHelper {
     }
   }
 
-  static Future<HttpResponse> postRequest(String url,
-      {Map<String, dynamic> payload = const {},
-      PayloadConverter? converter}) async {
+  static Future<HttpResponse> postRequest(
+    String url, {
+    Map<String, dynamic> payload = const {},
+  }) async {
+    print(payload);
     try {
-      final response = await http.post(
-        Uri.parse(_baseUrl + url),
-        headers: {
-          "content-type": "application/json",
-          "accept": "application/json"
-          // "Authorization": "Bearer ${AuthRepository.token}"
-        },
-        body: jsonEncode(payload)
-      ).timeout(const Duration(seconds: 60));
-
+      final response = await http
+          .post(Uri.parse(_baseUrl + url),
+              headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+                // "Authorization": "Bearer ${AuthRepository.token}"
+              },
+              body: jsonEncode(payload))
+          .timeout(const Duration(seconds: 60));
+      print(response.statusCode);
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
-      print(decodedJson);
 
-      if (converter != null) {
-        return SuccessResponse.fromJson(decodedJson).withConverter(converter);
+
+      if (response.statusCode == AppStatusCode.successful ||
+          response.statusCode == AppStatusCode.created) {
+        return SuccessResponse.fromJson(decodedJson);
       }
-
-      return SuccessResponse.fromJson(decodedJson);
-    } on SocketException {
+      if (response.statusCode == AppStatusCode.validationError) {
+        return ValidationError.fromJson(decodedJson);
+      }
+      
+      return ErrorResponse.defaultError();
+    } on SocketException catch (e) {
+      print(e.message);
       return const HttpResponse(
         status: "Failure",
         message: "No internet connection",
       );
     } catch (e) {
-      print(e);
       return ErrorResponse.defaultError();
     }
   }
@@ -109,9 +110,10 @@ class SuccessResponse<T> extends HttpResponse {
 }
 
 class ErrorResponse extends HttpResponse {
-  final List<String> errors;
-  ErrorResponse(
-      {required super.message, required super.status, this.errors = const []});
+  ErrorResponse({
+    required super.message,
+    required super.status,
+  });
 
   // factory ErrorResponse.fromJson(Map<String, dynamic> json) {
   //   List<HttpError> createErrors = [];
@@ -124,25 +126,50 @@ class ErrorResponse extends HttpResponse {
   //   }
 
   factory ErrorResponse.defaultError() => ErrorResponse(
-      status: "Failure",
-      message: "Error communicating with server",
-      errors: []);
+      status: "Failure", message: "Error communicating with server");
 
   //   return ErrorResponse(errors: createErrors);
   // }
 
   @override
-  String toString() => "ErrorResponse(message:$message,errors: $errors)";
+  String toString() => "ErrorResponse(message:$message)";
 }
 
-// class HttpError {
-//   final String errorTitle;
-//   final List<String> errorMessage;
-//   const HttpError({required this.errorTitle, required this.errorMessage});
+class ValidationError extends ErrorResponse {
+  final List<ResponseError> errors;
+  ValidationError(
+      {required this.errors, required super.message, required super.status});
 
-//   @override
-//   String toString() =>
-//       "HttpError(errorTitle: $errorTitle,errorMessage: $errorMessage)";
-// }
+  factory ValidationError.fromJson(Map<String, dynamic> json) {
+    Iterable errorKeys = (json["errors"] as Map<String, dynamic>).keys;
+
+    List<Map<String, dynamic>> formattedErrors = errorKeys
+        .map((e) => {"title": e, "message": json["errors"][e]})
+        .toList();
+
+    return ValidationError(
+        errors: formattedErrors.map((e) => ResponseError.fromJson(e)).toList(),
+        message: json["message"],
+        status: "Validation Error");
+  }
+}
+
+class ResponseError {
+  final String errorTitle;
+  final List<String> errorMessage;
+  const ResponseError({required this.errorTitle, required this.errorMessage});
+
+  factory ResponseError.fromJson(Map<String, dynamic> json) {
+    return ResponseError(
+        errorTitle: json["title"],
+        errorMessage: (json["message"] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList());
+  }
+
+  @override
+  String toString() =>
+      "HttpError(errorTitle: $errorTitle,errorMessage: $errorMessage)";
+}
 
 typedef PayloadConverter = T Function<T>(Map<String, dynamic> json);

@@ -8,12 +8,12 @@ Widget buildSocialLogins(String icon,{Function()? onTap}) => GestureDetector(
         width: 55,
         clipBehavior: Clip.none,
         alignment: Alignment.center,
-        padding: EdgeInsets.only(top: icon.contains("facebook")?7 :0),
+        // padding: EdgeInsets.only(top: icon.contains("facebook")?7 :0),
         decoration: BoxDecoration(
           color: const Color(0xff232429),
           border: Border.all(width: 1,color: Colors.white),
           borderRadius: BorderRadius.circular(12)
         ),
-        child: SvgPicture.asset(icon,height: icon.contains("facebook")?40 :30,width: icon.contains("facebook")?40 :30,),
+        child: SvgPicture.asset(icon,height: icon.contains("facebook")?30 :30,width: icon.contains("facebook")?30 :30,),
       ),
   );

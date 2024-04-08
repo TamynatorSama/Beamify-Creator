@@ -78,7 +78,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
                 .copyWith(fontSize: 15, color: const Color(0xff8A8A8A)),
             hintText: widget.hintText,
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
             prefixIcon: widget.prefixIcon != null
                   ? Container(
                       constraints: const BoxConstraints(maxWidth: 70),
@@ -110,11 +110,11 @@ class _CustomInputFieldState extends State<CustomInputField> {
             focusedErrorBorder:widget.noBorders?InputBorder.none:  OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide:
-                    const BorderSide(color: Color.fromARGB(255, 216, 55, 55))),
+                    const BorderSide(color: Color.fromARGB(255, 216, 71, 55))),
             errorBorder:widget.noBorders?InputBorder.none:  OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide:
-                    const BorderSide(color: Color.fromARGB(255, 216, 55, 55))),
+                    const BorderSide(color: Color.fromARGB(255, 216, 71, 55))),
             border:  widget.noBorders?InputBorder.none: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
                 borderSide: const BorderSide(color: Color(0xffE6E6E6))),
@@ -128,6 +128,7 @@ class _CustomInputFieldState extends State<CustomInputField> {
     color: Colors.white,
     fontWeight: FontWeight.w500,
     fontSize: 16
-  ).copyWith(fontWeight: FontWeight.w700));
+  ).copyWith(fontWeight: FontWeight.w700),
+  );
   }
 }

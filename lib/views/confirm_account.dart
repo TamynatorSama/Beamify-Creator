@@ -1,5 +1,8 @@
-import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
+import 'package:beamify_creator/shared/social_auth_button.dart';
+import 'package:beamify_creator/shared/utils/app_theme.dart';
+import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:pinput/pinput.dart';
 
 class ConfirmAccount extends StatelessWidget {
   const ConfirmAccount({super.key});
@@ -7,151 +10,88 @@ class ConfirmAccount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1D2224),
+      backgroundColor: AppTheme.backgroundColor,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 100 + MediaQuery.of(context).padding.top,
-              alignment: Alignment.centerLeft,
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).padding.top + 20,
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.5),
-                    ),
-                    borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.all(8),
-                child: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                ),
+              buildSocialLogins(
+                "assets/icons/Arrow-Left.svg",
+                onTap: () => Navigator.pop(context),
               ),
-            ),
-            const Text(
-              'Create Account',
-              style: TextStyle(
-                fontSize: 32,
-                color: Colors.white,
+              const SizedBox(
+                height: 30,
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              'Register now and start exploring  all that our app has to offer.',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.white.withOpacity(0.5),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Confirm Account",
+                    style: AppTheme.headerStyle,
+                  ),
+                  Text(
+                    "A registration confirmation code Will be sent to your Email Address.",
+                    style: AppTheme.bodyText
+                        .copyWith(color: Colors.white.withOpacity(0.7)),
+                  )
+                ],
               ),
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            Wrap(
-              direction: Axis.horizontal,
-              children: [
-                Container(
-                  height: 48,
-                  width: 53,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.all(8),
-                  child: const Text(''),
+              const SizedBox(
+                height: 30,
+              ),
+              Pinput(
+                  length: 5,
+                  // controller: controller.otpController,
+                  defaultPinTheme: PinTheme(
+                      height: 50,
+                      width: 60,
+                      textStyle: AppTheme.buttonStyle.copyWith(color: Colors.white),
+                      decoration: BoxDecoration(
+                          color: const Color(0xff232429),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(width: 1, color: Colors.grey))),
                 ),
                 const SizedBox(
-                  width: 16,
-                ),
-                Container(
-                  height: 48,
-                  width: 53,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.all(8),
-                  child: const Text(''),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Container(
-                  height: 48,
-                  width: 53,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.all(8),
-                  child: const Text(''),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Container(
-                  height: 48,
-                  width: 53,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.all(8),
-                  child: const Text(''),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Container(
-                  height: 48,
-                  width: 53,
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white.withOpacity(0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  padding: const EdgeInsets.all(8),
-                  child: const Text(''),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 33,
-            ),
-            customButton(txt: 'Confirm'),
-            const SizedBox(
-              height: 4,
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: Text(
-                'Resend code',
-                style: TextStyle(
-                    color: Colors.white.withOpacity(0.55),
-                    fontWeight: FontWeight.w300),
+                height: 30,
               ),
-            ),
-            const Spacer(),
-            Text(
-              'By clicking “ CONFIRM “ you accepted our Terms & Conditions of the User Agreement',
-              style: TextStyle(
-                  color: Colors.white.withOpacity(0.55),
-                  fontWeight: FontWeight.w300,
-                  fontSize: 12),
-            ),
-            SizedBox(
-              height: 12 + MediaQuery.of(context).padding.bottom,
-            ),
-          ],
-        ),
-      ),
+              CustomButton(text: "Confirm",onTap:(){}),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(onPressed: (){}, child: Text("Resend code",style: AppTheme.bodyText.copyWith(fontSize: 14),)),
+              ),
+              const Spacer(),
+              RichText(
+                                text: TextSpan(
+                                    children: [
+                                  const TextSpan(
+                                      text: "By clicking “ CONFIRM “  you accepted our "),
+                                  TextSpan(
+                                      text: "Terms & Conditions ",
+                                      style: AppTheme.bodyText.copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700)),
+                                          const TextSpan(
+                                      text: " of the "),
+                                      TextSpan(
+                                      text: "User Agreement",
+                                      style: AppTheme.bodyText.copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700)),
+                                ],
+                                    style: AppTheme.bodyText.copyWith(
+                                        fontSize: 12,
+                                        color: Colors.white.withOpacity(0.6),
+                                        fontWeight: FontWeight.w500))),
+                                        SizedBox(
+                            height: MediaQuery.of(context).padding.bottom + 20,
+                          ),
+            ],
+          )),
     );
+  
   }
 }

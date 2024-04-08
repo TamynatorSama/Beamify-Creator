@@ -5,7 +5,6 @@ import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/pages/onboarding/sign_up.dart';
-import 'package:beamify_creator/views/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +18,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
@@ -48,65 +48,85 @@ class _LoginPageState extends State<LoginPage> {
                             height: MediaQuery.of(context).size.height * 0.4,
                           ),
                           Form(
+                              key: _formKey,
                               child: Column(
-                            children: [
-                              CustomInputField(
-                                  hintText: "Email or Username",
-                                  controller: emailController),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              CustomInputField(
-                                hintText: "Password",
-                                controller: passwordController,
-                                isPassword: true,
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
+                                  CustomInputField(
+                                      hintText: "Email or Username",
+                                      inputType: TextInputType.emailAddress,
+                                      validator: (value) {
+                                        if ((value as String).isEmpty) {
+                                          return 'Email field is required';
+                                        }
+                                        if (!RegExp(
+                                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                            .hasMatch(emailController.text) && !RegExp(
+                                                r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$')
+                                            .hasMatch(emailController.text)  ) {
+                                          return "enter a valid email or username";
+                                        }
+                                        return null;
+                                      },
+                                      controller: emailController),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  CustomInputField(
+                                    hintText: "Password",
+                                    controller: passwordController,
+                                    isPassword: true,
+                                    inputType: TextInputType.visiblePassword,
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
                                   Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
                                     children: [
-                                      Checkbox(
-                                          value: rememberMe,
-                                          activeColor: AppTheme.primaryColor,
-                                          checkColor: Colors.black,
-                                          onChanged: (value) {
-                                            rememberMe = value ?? false;
-                                            setState(() {});
-                                          }),
-                                      Text(
-                                        "Remember me",
-                                        style: AppTheme.bodyText
-                                            .copyWith(fontSize: 14),
-                                      )
+                                      Row(
+                                        children: [
+                                          Checkbox(
+                                              value: rememberMe,
+                                              activeColor:
+                                                  AppTheme.primaryColor,
+                                              checkColor: Colors.black,
+                                              onChanged: (value) {
+                                                rememberMe = value ?? false;
+                                                setState(() {});
+                                              }),
+                                          Text(
+                                            "Remember me",
+                                            style: AppTheme.bodyText
+                                                .copyWith(fontSize: 14),
+                                          )
+                                        ],
+                                      ),
+                                      TextButton(
+                                          onPressed: () {},
+                                          child: Text(
+                                            "Forget Password?",
+                                            style: AppTheme.bodyText
+                                                .copyWith(fontSize: 14),
+                                          ))
                                     ],
                                   ),
-                                  TextButton(
-                                      onPressed: () {},
-                                      child: Text(
-                                        "Forget Password?",
-                                        style: AppTheme.bodyText
-                                            .copyWith(fontSize: 14),
-                                      ))
                                 ],
-                              ),
-                            ],
-                          )),
+                              )),
                           const SizedBox(
                             height: 15,
                           ),
                           CustomButton(
                               text: "Sign in",
-                              onTap: () {
-                                context.read<AuthBloc>().add(LoginEvent(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim(),
-                                    ));
+                              onTap: () async{
+                                
+                                if (_formKey.currentState!.validate()) {
+                                  context.read<AuthBloc>().add(LoginEvent(email: emailController.text.trim(), password: passwordController.text));
+                                  
+                                }
+                                // context.read<Logi>();
                                 //            Navigator.of(context).push(MaterialPageRoute(
                                 // builder: (context) => const CreatorHome()));
                               }),
