@@ -32,10 +32,10 @@ class _SignUpState extends State<SignUp> {
     if (kDebugMode) {
       emailController.text = "dadefemiwa@gmail.com";
       usernameController.text = "Tamynator";
-      passwordController.text = "Samuelsegun1@";
-      confirmController.text = "Samuelsegun1@";
-     lastNameController.text = "Kolawole";
-  firstNameController.text = "Tamilore";
+      passwordController.text = "T@mil0re";
+      confirmController.text = "T@mil0re";
+      lastNameController.text = "Kolawole";
+      firstNameController.text = "Tamilore";
     }
     super.initState();
   }
@@ -157,6 +157,7 @@ class _SignUpState extends State<SignUp> {
                                   onTap: () {
                                     if (_formKey.currentState!.validate()) {
                                       context.read<AuthBloc>().add(RegisterEvent(
+                                        context,
                                           email: emailController.text.trim(),
                                           firstName: firstNameController.text,
                                           lastName: lastNameController.text,

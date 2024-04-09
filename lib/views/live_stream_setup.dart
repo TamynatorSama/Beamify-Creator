@@ -1,5 +1,5 @@
-import 'package:beamify_creator/repository/signalling/firebase_signalling.dart';
-import 'package:beamify_creator/repository/signalling/signalling_repository.dart';
+import 'package:beamify_creator/controller/repository/signalling/firebase_signalling.dart';
+import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/views/event_scheduler.dart';
 import 'package:beamify_creator/views/now_streaming_page.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';

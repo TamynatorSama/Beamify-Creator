@@ -6,7 +6,7 @@ import 'package:beamify_creator/shared/http/app_status_code.dart';
 import 'package:http/http.dart' as http;
 
 class HttpHelper {
-  static const String _baseUrl = 'https://Beamify.stream/api/';
+  static const String _baseUrl = 'https://beamify.stream/api/';
 
   static Future<HttpResponse> getRequest(String url, {String? query}) async {
     try {
@@ -40,26 +40,29 @@ class HttpHelper {
               },
               body: jsonEncode(payload))
           .timeout(const Duration(seconds: 60));
-      print(response.statusCode);
+
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
 
-
+      print(response.statusCode);
       if (response.statusCode == AppStatusCode.successful ||
           response.statusCode == AppStatusCode.created) {
         return SuccessResponse.fromJson(decodedJson);
       }
-      if (response.statusCode == AppStatusCode.validationError) {
+      if (response.statusCode == AppStatusCode.validationError ||
+          response.statusCode == AppStatusCode.conflict) {
         return ValidationError.fromJson(decodedJson);
       }
-      
-      return ErrorResponse.defaultError();
+
+      return ErrorResponse.defaultError(errorMessage: decodedJson["message"]);
     } on SocketException catch (e) {
-      print(e.message);
-      return const HttpResponse(
+      print(e);
+      return HttpResponse(
         status: "Failure",
-        message: "No internet connection",
+        message: e.message,
       );
     } catch (e) {
+      print("object");
+      print(e);
       return ErrorResponse.defaultError();
     }
   }
@@ -70,22 +73,6 @@ class HttpResponse {
   final String message;
 
   const HttpResponse({required this.status, required this.message});
-
-  // factory HttpResponse.fromJson(Map<String, dynamic> json) => HttpResponse(
-  //     status: json['status'], message: json['message'], data: json['data']);
-
-  // HttpResponse withConverter(PayloadConverter converter) {
-  //   final data = converter(this.data as Map<String, dynamic>);
-  //   return HttpResponse(status: status, message: message, data: data);
-  // }
-
-  // factory HttpResponse.defaultError() => const HttpResponse(
-  //     status: "Failure",
-  //     message: "Error communicating with server",
-  //     data: null);
-
-  // @override
-  // String toString() => "HttpResponse(status: $status,message: $message)";
 }
 
 class SuccessResponse<T> extends HttpResponse {
@@ -125,8 +112,9 @@ class ErrorResponse extends HttpResponse {
   //             json[key].runtimeType == String ? [json[key]] : [...json[key]]));
   //   }
 
-  factory ErrorResponse.defaultError() => ErrorResponse(
-      status: "Failure", message: "Error communicating with server");
+  factory ErrorResponse.defaultError({String? errorMessage}) => ErrorResponse(
+      status: "Failure",
+      message: errorMessage ?? "Error communicating with server");
 
   //   return ErrorResponse(errors: createErrors);
   // }

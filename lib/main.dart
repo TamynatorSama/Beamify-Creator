@@ -5,6 +5,7 @@ import 'package:beamify_creator/controller/repository/repositories.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/blocs.dart';
 import 'package:beamify_creator/firebase_options.dart';
 import 'package:beamify_creator/shared/http/http_override.dart';
+import 'package:beamify_creator/shared/utils/local_storage.dart';
 import 'package:beamify_creator/views/pages/onboarding/login.dart';
 import 'package:beamify_creator/views/pages/onboarding/onboarding.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -16,7 +17,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  HttpOverrides.global= MyHttpoverrides();
+  HttpOverrides.global = MyHttpoverrides();
+  Storage.initStorage();
   runApp(
     DevicePreview(
       // enabled: !kReleaseMode,
@@ -36,9 +38,6 @@ class MainApp extends StatefulWidget {
 }
 
 class _MainAppState extends State<MainApp> {
-  
-
-
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(

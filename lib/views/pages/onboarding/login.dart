@@ -1,10 +1,13 @@
 import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/auth_event.dart';
+import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
+import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/pages/onboarding/sign_up.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -19,6 +22,15 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  @override
+  void initState() {
+    if (kDebugMode) {
+      emailController.text = "dadefemiwa@gmail.com";
+      passwordController.text = "T@mil0re";
+    }
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -58,12 +70,11 @@ class _LoginPageState extends State<LoginPage> {
                                         if ((value as String).isEmpty) {
                                           return 'Email field is required';
                                         }
-                                        if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                                .hasMatch(
-                                                    emailController.text) &&
-                                            !RegExp(r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$')
-                                                .hasMatch(
-                                                    emailController.text)) {
+                                        if (!RegExp(
+                                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                            .hasMatch(emailController.text) && !RegExp(
+                                                r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$')
+                                            .hasMatch(emailController.text)  ) {
                                           return "enter a valid email or username";
                                         }
                                         return null;
@@ -119,19 +130,26 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(
                             height: 15,
                           ),
-                          CustomButton(
-                              text: "Sign in",
-                              onTap: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  print('logging');
-                                  context.read<AuthBloc>().add(LoginEvent(
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text));
-                                }
-                                // context.read<Logi>();
-                                //            Navigator.of(context).push(MaterialPageRoute(
-                                // builder: (context) => const CreatorHome()));
-                              }),
+                          BlocBuilder<AuthBloc,AuthState>(
+                            builder: (context,controller) {
+                              return CustomButton(
+                                  text: "Sign in",
+                                  isLoading: controller.isLoading,
+                                  onTap: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      context.read<AuthBloc>().add(LoginEvent(
+                                        context,
+                                          email: emailController.text.trim(),
+                                          password: passwordController.text,
+                                          errorCallback: (value)=>showErrorFeedback(context,message: value))
+                                          );
+                                    }
+                                    // context.read<Logi>();
+                                    //            Navigator.of(context).push(MaterialPageRoute(
+                                    // builder: (context) => const CreatorHome()));
+                                  });
+                            }
+                          ),
                           const SizedBox(
                             height: 25,
                           ),

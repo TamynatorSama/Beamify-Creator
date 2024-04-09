@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:beamify_creator/shared/http/http_helper.dart';
+import 'package:beamify_creator/shared/utils/local_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 
@@ -12,15 +13,21 @@ class AuthRepository {
   static String get token => _token ?? "";
 
   static set token(String? value) {
+    print(value);
+    Storage.storage.write(key: "token", value: value);
+
     _token = value;
   }
 
-  Future<void> login({required String email, required String password}) async {
-    print("object");
+  Future<HttpResponse> login(
+      {required String email, required String password}) async {
     HttpResponse response = await HttpHelper.postRequest(
         "$sectionBaseUrl/login",
         payload: {"email": email, "password": password});
-    print(response.message);
+    if (response is SuccessResponse) {
+      token = response.result["data"]["token"];
+    }
+    return response;
   }
 
   Future<HttpResponse> register(
@@ -37,6 +44,11 @@ class AuthRepository {
       "password": password,
       "username": username
     });
+    print(response.runtimeType);
+    if (response is SuccessResponse) {
+      print(response.result);
+      token = response.result["data"]["token"];
+    }
     return response;
   }
 
