@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:beamify_creator/shared/http/http_helper.dart';
-// import 'package:beamify_creator/const.dart';
-import 'package:beamify_creator/shared/http_helper.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/foundation.dart';
 
@@ -30,14 +28,14 @@ class AuthRepository {
       required String password,
       required String username,
       required String firstName,
-      required String lastName
-      }) async {
+      required String lastName}) async {
     HttpResponse response =
         await HttpHelper.postRequest("$sectionBaseUrl/register", payload: {
       "email": email,
       "first_name": firstName,
       "last_name": lastName,
-      "password": password, "username": username
+      "password": password,
+      "username": username
     });
     return response;
   }
@@ -79,5 +77,19 @@ class AuthRepository {
     if (googleAuthentication.accessToken != null) {
       // HttpHelper.getRequest()
     }
+  }
+
+  Future<void> requestOtp() async {
+    // HttpResponse response = 
+    await HttpHelper.getRequest(
+      "$sectionBaseUrl/auth/otp/request_otp",
+    );
+  }
+
+  Future<void> verifyOtp() async {
+    // HttpResponse response =
+    await HttpHelper.getRequest(
+      "$sectionBaseUrl/auth/otp/verify_otp",
+    );
   }
 }

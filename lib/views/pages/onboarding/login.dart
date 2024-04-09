@@ -58,11 +58,12 @@ class _LoginPageState extends State<LoginPage> {
                                         if ((value as String).isEmpty) {
                                           return 'Email field is required';
                                         }
-                                        if (!RegExp(
-                                                r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
-                                            .hasMatch(emailController.text) && !RegExp(
-                                                r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$')
-                                            .hasMatch(emailController.text)  ) {
+                                        if (!RegExp(r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
+                                                .hasMatch(
+                                                    emailController.text) &&
+                                            !RegExp(r'^[a-zA-Z0-9][a-zA-Z0-9_.]+[a-zA-Z0-9]$')
+                                                .hasMatch(
+                                                    emailController.text)) {
                                           return "enter a valid email or username";
                                         }
                                         return null;
@@ -120,11 +121,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           CustomButton(
                               text: "Sign in",
-                              onTap: () async{
-                                
+                              onTap: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  context.read<AuthBloc>().add(LoginEvent(email: emailController.text.trim(), password: passwordController.text));
-                                  
+                                  print('logging');
+                                  context.read<AuthBloc>().add(LoginEvent(
+                                      email: emailController.text.trim(),
+                                      password: passwordController.text));
                                 }
                                 // context.read<Logi>();
                                 //            Navigator.of(context).push(MaterialPageRoute(
