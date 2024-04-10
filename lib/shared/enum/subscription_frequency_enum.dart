@@ -1,0 +1,1 @@
+enum SubscriptionFrequency { weekly, monthly }
