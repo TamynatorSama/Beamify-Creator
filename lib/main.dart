@@ -9,6 +9,7 @@ import 'package:beamify_creator/firebase_options.dart';
 import 'package:beamify_creator/shared/http/http_override.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/local_storage.dart';
+import 'package:beamify_creator/views/create_channel.dart';
 import 'package:beamify_creator/views/pages/onboarding/login.dart';
 import 'package:beamify_creator/views/pages/onboarding/onboarding.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -73,7 +74,8 @@ class _MainAppState extends State<MainApp> {
               }),
 
               // onGenerateRoute: ,
-              home: const RouteDecipher(),
+              home: const CreateChannel()
+              // const RouteDecipher(),
             )));
   }
 }

@@ -1,0 +1,1 @@
+enum ChannelType { paid, free }
