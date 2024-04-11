@@ -52,7 +52,7 @@ class CustomInputField extends StatefulWidget {
 
 class _CustomInputFieldState extends State<CustomInputField> {
   bool obscurePassword = true;
-  bool isFocused = true;
+  bool isFocused = false;
   FocusNode focus = FocusNode();
 
   void updatePassword() => setState(() => obscurePassword = !obscurePassword);

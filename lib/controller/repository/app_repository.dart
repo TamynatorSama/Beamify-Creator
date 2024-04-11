@@ -31,10 +31,9 @@ class AppRepository {
       return value;
     });
   }
-  
 
   Future<HttpResponse> getUserChannels() async {
-    return await HttpHelper.getRequest("channels").then((value) {
+    return await HttpHelper.getRequest("channels?include=pod").then((value) {
       if (value.isSuccessful) {
         return (value as SuccessResponse).withConverter((json) {
           final jsonData = value.result["channels"];
@@ -73,6 +72,38 @@ class AppRepository {
         return (value as SuccessResponse).withConverter((json) {
           final jsonData = value.result["channel"];
           return ChannelModel.fromJson(jsonData);
+        });
+      }
+      return value;
+    });
+  }
+
+  Future<HttpResponse> createPod(
+      {required String channelId,
+      required String podType,
+      required String podName,
+      required String podDescription,
+      File? image,
+      required String type}) async {
+    final payload = {
+      'channel_id': channelId,
+      'pod_type': podType,
+      'pod_name': podName,
+      'pod_description': podDescription,
+    };
+
+    List<Map<String, File>> uploadFiles = [];
+    if (image != null) {
+      uploadFiles.add({"channel_image": image});
+    }
+    return await HttpHelper.postFormRequest('pods',
+            payload: payload, files: uploadFiles)
+        .then((value) {
+      if (value.isSuccessful) {
+        return (value as SuccessResponse).withConverter((json) {
+          print(json);
+          // final jsonData = value.result["channel"];
+          // return ChannelModel.fromJson(jsonData);
         });
       }
       return value;

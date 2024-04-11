@@ -28,3 +28,19 @@ class CreateChannelEvent extends AppEvent {
       // required this.successCallback,
       required this.type});
 }
+
+class CreatePodEvent extends AppEvent {
+  final String channelId;
+  final String podType;
+  final String podName;
+  final String podDescription;
+  final File? image;
+  final String type;
+  const CreatePodEvent(
+      {required this.channelId,
+      required this.podType,
+      required this.podName,
+      required this.podDescription,
+      this.image,
+      required this.type});
+}
