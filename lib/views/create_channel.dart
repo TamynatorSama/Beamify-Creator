@@ -1,7 +1,10 @@
 import 'dart:io';
 
+import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
-import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
+import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
+import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
+// import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
 import 'package:beamify_creator/shared/enum/channel_type_enum.dart';
 import 'package:beamify_creator/shared/enum/subscription_frequency_enum.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
@@ -81,10 +84,10 @@ class _CreateChannelState extends State<CreateChannel> {
                 child: LayoutBuilder(
                   builder: (context, constraints) => SingleChildScrollView(
                     clipBehavior: Clip.antiAlias,
-                    child: ConstrainedBox(
-                      constraints:
-                          BoxConstraints(minHeight: constraints.maxHeight),
-                      child: IntrinsicHeight(
+                    child: IntrinsicHeight(
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
                         child: Column(children: [
                           Form(
                             key: _formKey,
@@ -130,8 +133,6 @@ class _CreateChannelState extends State<CreateChannel> {
                                             coverImage =
                                                 File(result.files.single.path!);
                                           });
-                                        } else {
-                                          // User canceled the picker
                                         }
                                       },
                                       child: const Text(
@@ -346,19 +347,33 @@ class _CreateChannelState extends State<CreateChannel> {
                             ),
                           ),
                           const SizedBox(
-                            height: 15,
+                            height: 24,
                           ),
-                          BlocBuilder<AuthBloc, AuthState>(
+                          const Spacer(),
+                          BlocBuilder<AppBloc, AppState>(
                               builder: (context, controller) {
                             return CustomButton(
                                 text: "Create",
                                 isLoading: controller.isLoading,
                                 onTap: () {
                                   if (_formKey.currentState!.validate()) {
-                                    //  Convert amount to kobo b4 sending: *100
+                                    context.read<AppBloc>().add(
+                                        CreateChannelEvent(
+                                          context: context,
+                                            channelDescription:
+                                                channelDescriptionController
+                                                    .text,
+                                            channelName:
+                                                channelNameController.text,
+                                            image: channelImage,
+                                            type: channelType.name,
+                                            coverImage: coverImage));
                                   }
                                 });
                           }),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).padding.bottom + 20),
                         ]),
                       ),
                     ),

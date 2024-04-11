@@ -21,11 +21,14 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
   late ISignalling signalling;
   final GlobalKey<PopupMenuButtonState> _popKey =
       GlobalKey<PopupMenuButtonState>();
+      final GlobalKey<PopupMenuButtonState> _categoryKey =
+      GlobalKey<PopupMenuButtonState>();
 
       final GlobalKey<FormState> _formKey =
       GlobalKey<FormState>();
 
   TextEditingController eventTitleController = TextEditingController();
+  TextEditingController eventCategoryController = TextEditingController();
   TextEditingController presenter = TextEditingController();
   TextEditingController micSource = TextEditingController();
   TextEditingController pictureUpload = TextEditingController();
@@ -80,11 +83,63 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
                               hintText: 'Input Event Title Here',
                             ),
                             const SizedBox(height: 24),
-                            CustomInputField(
-                              label: 'Event Category*',
-                              controller: TextEditingController(),
-                              hintText: 'Event Category e.g Sermon',
-                            ),
+                            PopupMenuButton(
+                                  key: _categoryKey,
+                                  padding: const EdgeInsets.all(7),
+                                  color: AppTheme.backgroundColor,
+                                  position: PopupMenuPosition.under,
+                                  offset: const Offset(0, 100),
+                                  constraints: BoxConstraints(
+                                      minWidth:
+                                          MediaQuery.of(context).size.width -
+                                              52),
+                                  child: CustomInputField(
+                                    label: 'Microphone Source',
+                                    controller: eventCategoryController,
+                                    onTap: () {
+                                      if (_categoryKey.currentState != null) {
+                                        _categoryKey.currentState!.showButtonMenu();
+                                      }
+                                    },
+                                    suffixIcon: const Icon(
+                                      Icons.arrow_drop_down,
+                                      size: 35,
+                                      color: Colors.white,
+                                    ),
+                                    readOnly: true,
+                                    hintText:
+                                        'choose pod category',
+                                  ),
+                                  itemBuilder: (context) => context
+                                      .read<AppBloc>()
+                                      .state
+                                      .tags
+                                      .map((e) => PopupMenuItem(
+                                          padding: const EdgeInsets.all(15),
+                                          onTap: () {
+                                            eventCategoryController.text = e.tagSlug;
+                                          },
+                                          child: Row(
+                                            children: [
+                                              SvgPicture.string(
+                                                """<svg xmlns="http://www.w3.org/2000/svg" width="0.75em" height="1em" viewBox="0 0 384 512"><path fill="currentColor" d="M192 0c-53 0-96 43-96 96v160c0 53 43 96 96 96s96-43 96-96V96c0-53-43-96-96-96M64 216c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 89.1 66.2 162.7 152 174.4V464h-48c-13.3 0-24 10.7-24 24s10.7 24 24 24h144c13.3 0 24-10.7 24-24s-10.7-24-24-24h-48v-33.6c85.8-11.7 152-85.3 152-174.4v-40c0-13.3-10.7-24-24-24s-24 10.7-24 24v40c0 70.7-57.3 128-128 128S64 326.7 64 256z"/></svg>""",
+                                                width: 24,
+                                                theme: const SvgTheme(
+                                                    currentColor:
+                                                        AppTheme.primaryColor),
+                                              ),
+                                              const SizedBox(
+                                                width: 20,
+                                              ),
+                                              Text(
+                                                e.tagSlug,
+                                                style: AppTheme.buttonStyle
+                                                    .copyWith(
+                                                        color: Colors.white),
+                                              ),
+                                            ],
+                                          )))
+                                      .toList()),
                             const SizedBox(height: 24),
                             CustomInputField(
                               label: 'Name of Presenters (Optional)',

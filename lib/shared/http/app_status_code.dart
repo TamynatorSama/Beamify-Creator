@@ -3,4 +3,5 @@ class AppStatusCode {
   static int created = 201;
   static int validationError = 422;
   static int conflict = 409;
+  static int notFount = 404;
 }

@@ -16,6 +16,7 @@ import 'package:firebase_core/firebase_core.dart';
 // import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() async {
@@ -23,6 +24,8 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   HttpOverrides.global = MyHttpoverrides();
   Storage.initStorage();
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
   runApp(
     DevicePreview(
       // enabled: !kReleaseMode,
@@ -74,8 +77,9 @@ class _MainAppState extends State<MainApp> {
               }),
 
               // onGenerateRoute: ,
-              home: const CreateChannel()
-              // const RouteDecipher(),
+              home:
+                  //const CreateChannel()
+                  const RouteDecipher(),
             )));
   }
 }

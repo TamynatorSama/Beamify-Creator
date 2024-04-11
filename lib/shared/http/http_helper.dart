@@ -15,7 +15,6 @@ class HttpHelper {
       }).timeout(const Duration(seconds: 60));
       print(response.body);
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
-      
 
       return SuccessResponse.fromJson(decodedJson);
     } on SocketException {
@@ -64,6 +63,49 @@ class HttpHelper {
       return ErrorResponse.defaultError();
     }
   }
+
+  static Future postFormRequest(String url,
+      {Map<String, String> payload = const {},
+      List<Map<String, File>> files = const []}) async {
+    print(url);
+    try {
+      var request = http.MultipartRequest("POST", Uri.parse(_baseUrl + url));
+
+      request.headers
+          .addAll({"Authorization": "Bearer ${AuthRepository.token}"});
+      request.headers.addAll({"Content-Type": "multipart/form-data"});
+      request.headers.addAll({"Accept": "application/json"});
+      request.fields.addAll(payload);
+      for (var file in files) {
+        request.files
+            .add(await http.MultipartFile.fromPath(file.keys.first, file.values.first.path));
+      }
+      http.StreamedResponse sendRequest = await request.send();
+      final response = await http.Response.fromStream(sendRequest);
+      Map<String, dynamic> decodedJson = jsonDecode(response.body);
+
+      if (response.statusCode == AppStatusCode.successful ||
+          response.statusCode == AppStatusCode.created) {
+        return SuccessResponse.fromJson(decodedJson);
+      }
+      if (response.statusCode == AppStatusCode.validationError ||
+          response.statusCode == AppStatusCode.conflict) {
+        return ValidationError.fromJson(decodedJson);
+      }
+      if (response.statusCode == AppStatusCode.notFount) {
+        return ErrorResponse(
+            message: decodedJson["message"] ?? "Route not found",
+            status: "Failure");
+      }
+      return ErrorResponse.defaultError();
+    } on SocketException catch (e) {
+      print(e);
+      return ErrorResponse.defaultError(errorMessage: e.message);
+    } catch (e) {
+      print(e);
+      return ErrorResponse.defaultError();
+    }
+  }
 }
 
 class HttpResponse {
@@ -93,7 +135,7 @@ class SuccessResponse<T> extends HttpResponse {
           result: json['data']);
 
   SuccessResponse withConverter(PayloadConverter converter) {
-    final data = converter(this.result as Iterable);
+    final data = converter(this.result as Object);
     return SuccessResponse(status: status, message: message, result: data);
   }
 
@@ -166,4 +208,4 @@ class ResponseError {
       "HttpError(errorTitle: $errorTitle,errorMessage: $errorMessage)";
 }
 
-typedef PayloadConverter<T,R extends Iterable> = T Function(R json);
+typedef PayloadConverter<T, R extends Object> = T Function(R json);

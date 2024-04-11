@@ -7,7 +7,7 @@ import 'package:beamify_creator/controller/state_manager/events/auth_event.dart'
 import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:beamify_creator/views/confirm_account.dart';
-import 'package:beamify_creator/views/home.dart';
+import 'package:beamify_creator/views/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
