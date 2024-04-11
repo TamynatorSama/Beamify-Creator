@@ -13,7 +13,6 @@ class AuthRepository {
   static String get token => _token ?? "";
 
   static set token(String? value) {
-    print(value);
     Storage.storage.write(key: "token", value: value);
 
     _token = value;
@@ -25,7 +24,7 @@ class AuthRepository {
         "$sectionBaseUrl/login",
         payload: {"email": email, "password": password});
     if (response is SuccessResponse) {
-      token = response.result["data"]["token"];
+      token = response.result["token"];
     }
     return response;
   }
@@ -44,10 +43,9 @@ class AuthRepository {
       "password": password,
       "username": username
     });
-    print(response.runtimeType);
     if (response is SuccessResponse) {
       print(response.result);
-      token = response.result["data"]["token"];
+      token = response.result["token"];
     }
     return response;
   }
@@ -91,17 +89,21 @@ class AuthRepository {
     }
   }
 
-  Future<void> requestOtp() async {
-    // HttpResponse response = 
-    await HttpHelper.getRequest(
-      "$sectionBaseUrl/auth/otp/request_otp",
+  Future<HttpResponse> requestOtp(String email) async {
+    HttpResponse response = await HttpHelper.getRequest(
+      "$sectionBaseUrl/otp/$email/request_otp",
     );
+    return response;
   }
 
-  Future<void> verifyOtp() async {
-    // HttpResponse response =
-    await HttpHelper.getRequest(
-      "$sectionBaseUrl/auth/otp/verify_otp",
+  Future<HttpResponse> verifyOtp(String otp) async {
+    HttpResponse response = await HttpHelper.postRequest(
+      "$sectionBaseUrl/otp/verify_otp",
+      payload: {
+        "otp":otp
+      }
     );
+
+    return response;
   }
 }

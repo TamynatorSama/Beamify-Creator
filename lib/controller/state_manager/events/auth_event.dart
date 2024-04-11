@@ -20,8 +20,7 @@ class RegisterEvent extends AuthEvent {
   final String firstName;
   final String lastName;
   final BuildContext context;
-  const RegisterEvent(
-    this.context,
+  const RegisterEvent(this.context,
       {required this.email,
       required this.firstName,
       required this.password,
@@ -32,4 +31,18 @@ class RegisterEvent extends AuthEvent {
 
 class GoogleSignupEvent extends AuthEvent {
   const GoogleSignupEvent();
+}
+
+class SendOtpEvent extends AuthEvent {
+  final String email;
+  final BuildContext context;
+
+  const SendOtpEvent(this.email,this.context);
+}
+
+class VerifyOtpEvent extends AuthEvent {
+  final String otp;
+  final BuildContext context;
+
+  const VerifyOtpEvent(this.otp,this.context);
 }

@@ -15,14 +15,17 @@ class ScheduledEvents extends StatelessWidget {
             SizedBox(
               height: MediaQuery.of(context).padding.top,
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 4,
-                vertical: 16,
-              ),
-              child: const Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.white,
+            InkWell(
+              onTap: ()=>Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 4,
+                  vertical: 16,
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Colors.white,
+                ),
               ),
             ),
             Container(

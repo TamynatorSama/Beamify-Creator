@@ -1,6 +1,6 @@
 import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/auth_event.dart';
-import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
+import 'package:beamify_creator/controller/state_manager/state/auth_state.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
 import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     if (kDebugMode) {
-      emailController.text = "dadefemiwa@gmail.com";
+      emailController.text = "Kolawoletamilore1@gmail.com";
       passwordController.text = "T@mil0re";
     }
 

@@ -7,7 +7,11 @@ class CustomButton extends StatefulWidget {
   final String text;
   final bool? isLoading;
   const CustomButton(
-      {super.key, this.onTap, required this.text, this.isLoading,this.maxWidth});
+      {super.key,
+      this.onTap,
+      required this.text,
+      this.isLoading,
+      this.maxWidth});
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -26,7 +30,8 @@ class _CustomButtonState extends State<CustomButton> {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () async {
-            if ((widget.isLoading?? isLoading)) return;
+            if ((widget.isLoading ?? isLoading)) return;
+            FocusScope.of(context).unfocus();
             if (widget.onTap != null) {
               setState(() {
                 isLoading = true;
@@ -38,8 +43,7 @@ class _CustomButtonState extends State<CustomButton> {
             }
           },
           splashColor: const Color.fromARGB(46, 255, 255, 255),
-          child: 
-          Ink(
+          child: Ink(
               width: double.maxFinite,
               height: 55,
               decoration: BoxDecoration(
@@ -47,13 +51,19 @@ class _CustomButtonState extends State<CustomButton> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: (widget.isLoading ?? isLoading) ?ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 23,maxWidth: 23),
-                  child: const CircularProgressIndicator(strokeWidth: 5,color:Colors.black,))
-              :Text(
-                  widget.text,
-                  style: AppTheme.buttonStyle,
-                ),)),
+                child: (widget.isLoading ?? isLoading)
+                    ? ConstrainedBox(
+                        constraints:
+                            const BoxConstraints(maxHeight: 23, maxWidth: 23),
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 5,
+                          color: Colors.black,
+                        ))
+                    : Text(
+                        widget.text,
+                        style: AppTheme.buttonStyle,
+                      ),
+              )),
         ),
       ),
     );

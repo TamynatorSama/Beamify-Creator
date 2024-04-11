@@ -13,14 +13,16 @@ class HttpHelper {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
         "Authorization": "Bearer ${AuthRepository.token}"
       }).timeout(const Duration(seconds: 60));
-
+      print(response.body);
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
+      
 
       return SuccessResponse.fromJson(decodedJson);
     } on SocketException {
       return ErrorResponse(
           status: "Failure", message: "No internet connection");
     } catch (e) {
+      print(e);
       return ErrorResponse.defaultError();
     }
   }
@@ -35,8 +37,8 @@ class HttpHelper {
           .post(Uri.parse(_baseUrl + url),
               headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/json"
-                // "Authorization": "Bearer ${AuthRepository.token}"
+                "Accept": "application/json",
+                "Authorization": "Bearer ${AuthRepository.token}"
               },
               body: jsonEncode(payload))
           .timeout(const Duration(seconds: 60));
@@ -56,12 +58,8 @@ class HttpHelper {
       return ErrorResponse.defaultError(errorMessage: decodedJson["message"]);
     } on SocketException catch (e) {
       print(e);
-      return HttpResponse(
-        status: "Failure",
-        message: e.message,
-      );
+      return ErrorResponse.defaultError(errorMessage: e.message);
     } catch (e) {
-      print("object");
       print(e);
       return ErrorResponse.defaultError();
     }
@@ -71,24 +69,31 @@ class HttpHelper {
 class HttpResponse {
   final String status;
   final String message;
+  final bool isSuccessful;
 
-  const HttpResponse({required this.status, required this.message});
+  const HttpResponse(
+      {required this.status,
+      required this.isSuccessful,
+      required this.message});
 }
 
 class SuccessResponse<T> extends HttpResponse {
   final T result;
 
   const SuccessResponse(
-      {required this.result, required super.message, required super.status});
+      {required this.result,
+      super.isSuccessful = true,
+      required super.message,
+      required super.status});
 
   factory SuccessResponse.fromJson(Map<String, dynamic> json) =>
       SuccessResponse(
-          status: json['status'],
+          status: json['status'].toString(),
           message: json['message'],
           result: json['data']);
 
   SuccessResponse withConverter(PayloadConverter converter) {
-    final data = converter(this.result as Map<String, dynamic>);
+    final data = converter(this.result as Iterable);
     return SuccessResponse(status: status, message: message, result: data);
   }
 
@@ -99,6 +104,7 @@ class SuccessResponse<T> extends HttpResponse {
 class ErrorResponse extends HttpResponse {
   ErrorResponse({
     required super.message,
+    super.isSuccessful = false,
     required super.status,
   });
 
@@ -160,4 +166,4 @@ class ResponseError {
       "HttpError(errorTitle: $errorTitle,errorMessage: $errorMessage)";
 }
 
-typedef PayloadConverter = T Function<T>(Map<String, dynamic> json);
+typedef PayloadConverter<T,R extends Iterable> = T Function(R json);

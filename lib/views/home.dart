@@ -1,9 +1,26 @@
+import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/views/event_scheduler.dart';
 import 'package:beamify_creator/views/live_stream_setup.dart';
+import 'package:beamify_creator/views/scheduled_events.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CreatorHome extends StatelessWidget {
+class CreatorHome extends StatefulWidget {
   const CreatorHome({super.key});
+
+  @override
+  State<CreatorHome> createState() => _CreatorHomeState();
+}
+
+class _CreatorHomeState extends State<CreatorHome> {
+
+  @override
+  void initState() {
+   context.read<AppBloc>().add(const InitData());
+    super.initState();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +36,19 @@ class CreatorHome extends StatelessWidget {
               right: 24,
               top: MediaQuery.of(context).padding.top,
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                ),
-                Spacer(),
-                Icon(
-                  Icons.menu_rounded,
-                  color: Colors.white,
+                // Icon(
+                //   Icons.arrow_back_ios_new_rounded,
+                //   color: Colors.white,
+                // ),
+                const Spacer(),
+                GestureDetector(
+                  onTap: ()=>Navigator.push(context, MaterialPageRoute(builder: (context)=>const ScheduledEvents())),
+                  child: const Icon(
+                    Icons.menu_rounded,
+                    color: Colors.white,
+                  ),
                 )
               ],
             ),

@@ -2,9 +2,12 @@ import 'dart:io';
 
 import 'package:beamify_creator/controller/repository/auth_repository.dart';
 import 'package:beamify_creator/controller/repository/repositories.dart';
+import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/blocs.dart';
+import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
 import 'package:beamify_creator/firebase_options.dart';
 import 'package:beamify_creator/shared/http/http_override.dart';
+import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/local_storage.dart';
 import 'package:beamify_creator/views/pages/onboarding/login.dart';
 import 'package:beamify_creator/views/pages/onboarding/onboarding.dart';
@@ -47,6 +50,28 @@ class _MainAppState extends State<MainApp> {
             child: MaterialApp(
               key: MainApp.mainNavigatorKey,
               debugShowCheckedModeBanner: false,
+              builder: (context, child) =>
+                  BlocBuilder<AppBloc, AppState>(builder: (context, blo) {
+                return Stack(
+                  children: [
+                    child!,
+                    if (blo.isLoading)
+                      Container(
+                        height: double.maxFinite,
+                        width: double.maxFinite,
+                        color: Colors.black.withOpacity(0.6),
+                        child: const Column(
+                          children: [
+                            LinearProgressIndicator(
+                              color: AppTheme.primaryColor,
+                            ),
+                          ],
+                        ),
+                      )
+                  ],
+                );
+              }),
+
               // onGenerateRoute: ,
               home: const RouteDecipher(),
             )));
