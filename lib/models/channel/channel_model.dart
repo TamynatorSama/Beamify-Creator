@@ -19,7 +19,9 @@ class ChannelModel {
       channelName: json['channel_name'],
       channelDescription: json['channel_description'],
       channelImage: json['channel_image'] ?? "",
-      pods: (json['pods'] as List<dynamic>).map((e)=>PodModel.fromJson(e)).toList(),
+      pods:((json['pods'] ??[])as List<dynamic>)
+          .map((e) => PodModel.fromJson(e))
+          .toList(),
       channelCoverImage: json['cover_image'] ?? "");
 }
 
@@ -29,6 +31,7 @@ class PodModel {
   final String podName;
   final String? podDescription;
   final String podType;
+  final String image;
   final DateTime airDate;
   final bool isOnAir;
   final String likes;
@@ -43,6 +46,7 @@ class PodModel {
       required this.isOnAir,
       required this.podDescription,
       required this.podId,
+      this.image="",
       required this.commentCount,
       required this.likes,
       required this.viewerCount,
@@ -50,16 +54,15 @@ class PodModel {
       required this.podType});
 
   factory PodModel.fromJson(Map<String, dynamic> json) => PodModel(
-      airDate:
-          DateTime.tryParse(json["air_date"]?? "") ?? DateTime.now(),
-      creatorId: json["creator_id"],
+      airDate: DateTime.tryParse((json["air_date"] is String) ? json["air_date"]:json["air_date"]["date"] ?? "") ?? DateTime.now(),
+      creatorId: json["creator_id"].toString(),
       isBroadcasting: json['is_broadcasting'],
       isOnAir: json["on_air"],
       podDescription: json["pod_description"],
       podId: json["pod_id"],
-      commentCount: json["comment_count"],
-      likes: json["likes"],
-      viewerCount: json["viewer_count"],
+      commentCount: json["comment_count"].toString(),
+      likes: json["likes"].toString(),
+      viewerCount: json["viewer_count"].toString(),
       podName: json["pod_name"],
       podType: json["pod_type"]);
 }

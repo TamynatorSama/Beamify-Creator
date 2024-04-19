@@ -4,7 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 Future showErrorFeedback(BuildContext context, {String? message,bool isError = true}) async {
   BuildContext? dialogBuildContext;
- await showDialog(
+ showDialog(
       context: context,
       builder: (context) {
         dialogBuildContext = context;
@@ -54,7 +54,7 @@ Future showErrorFeedback(BuildContext context, {String? message,bool isError = t
         );
       });
 
-  Future.delayed(const Duration(seconds: 2), () {
+  await Future.delayed(const Duration(seconds: 2), () {
     if (dialogBuildContext != null && dialogBuildContext!.mounted) {
       Navigator.pop(dialogBuildContext!);
     }

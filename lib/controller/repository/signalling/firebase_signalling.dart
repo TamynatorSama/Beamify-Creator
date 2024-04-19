@@ -40,10 +40,10 @@ class FirebaseSignalling implements ISignalling {
       },
     ],
   };
-  // StreamStateCallback? onAddRemoteStream;
+
 
   @override
-  Future<void> createPod() async {
+  Future<void> createPod({String userId = "1"}) async {
     FirebaseFirestore db = FirebaseFirestore.instance;
     DocumentReference roomRef = db.collection('rooms').doc();
 
@@ -51,7 +51,7 @@ class FirebaseSignalling implements ISignalling {
 
     peerConnection = await createPeerConnection(configuration);
 
-    registerPeerConnectionListeners();
+    registerPeerConnectionListeners(peerConnection!);
 
     localStream?.getTracks().forEach((track) {
       peerConnection?.addTrack(track, localStream!);
@@ -176,20 +176,20 @@ class FirebaseSignalling implements ISignalling {
   }
 
   @override
-  void registerPeerConnectionListeners() {
-    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
+  void registerPeerConnectionListeners(RTCPeerConnection peerConnection) {
+    peerConnection.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE gathering state changed: $state');
     };
 
-    peerConnection?.onConnectionState = (RTCPeerConnectionState state) {
+    peerConnection.onConnectionState = (RTCPeerConnectionState state) {
       print('Connection state change: $state');
     };
 
-    peerConnection?.onSignalingState = (RTCSignalingState state) {
+    peerConnection.onSignalingState = (RTCSignalingState state) {
       print('Signaling state change: $state');
     };
 
-    peerConnection?.onIceGatheringState = (RTCIceGatheringState state) {
+    peerConnection.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE connection state change: $state');
     };
   }

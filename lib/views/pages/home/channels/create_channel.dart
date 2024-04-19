@@ -1,20 +1,20 @@
 import 'dart:io';
 
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
-import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
+import 'package:beamify_creator/models/category_model.dart';
 // import 'package:beamify_creator/controller/state_manager/state/auth_action.dart';
 import 'package:beamify_creator/shared/enum/channel_type_enum.dart';
 import 'package:beamify_creator/shared/enum/subscription_frequency_enum.dart';
 import 'package:beamify_creator/shared/social_auth_button.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
+import 'package:multi_dropdown/multiselect_dropdown.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/single_image_view.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CreateChannel extends StatefulWidget {
@@ -34,6 +34,8 @@ class _CreateChannelState extends State<CreateChannel> {
   File? coverImage;
   File? channelImage;
 
+  MultiSelectController<CategoryModel> categoryController =
+      MultiSelectController<CategoryModel>();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
@@ -248,16 +250,103 @@ class _CreateChannelState extends State<CreateChannel> {
                                 const SizedBox(
                                   height: 20,
                                 ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    //     Text(
+                                    //       "Category",
+                                    //       style: AppTheme.bodyText.copyWith(
+                                    //           fontWeight: FontWeight.w700),
+                                    //     ),
+                                    //     const SizedBox(
+                                    //       height: 4,
+                                    //     ),
+                                    //     const SizedBox(
+                                    //   height: 20,
+                                    // ),
+                                    MultiSelectDropDown<CategoryModel>(
+                                      onOptionSelected: (options) {
+                                        debugPrint(options.toString());
+                                      },
+                                      controller: categoryController,
+                                      optionsBackgroundColor:
+                                          Colors.transparent,
+                                      optionTextStyle: AppTheme.bodyText,
+                                      suffixIcon: const Icon(
+                                        Icons.arrow_drop_down,
+                                        size: 30,
+                                        color: Colors.white,
+                                      ),
+                                      clearIcon: const Icon(
+                                        Icons.close,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                      animateSuffixIcon: false,
+                                      selectedOptionBackgroundColor:
+                                          Colors.white.withOpacity(0.1),
+                                      hint: "Category",
+                                      fieldBackgroundColor:
+                                          AppTheme.backgroundColor,
+                                      dropdownBackgroundColor: Colors.black,
+                                      dropdownBorderRadius: 10,
+                                      inputDecoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          border: Border.all(
+                                              color: const Color(0xffE6E6E6))),
+                                      options: context
+                                          .read<AppBloc>()
+                                          .state
+                                          .tags
+                                          .map((e) => ValueItem(
+                                              label: e.tagSlug, value: e))
+                                          .toList(),
+                                      selectionType: SelectionType.multi,
+                                      chipConfig: const ChipConfig(
+                                        wrapType: WrapType.scroll,
+                                        backgroundColor: AppTheme.btnColor,
+                                      ),
+                                      dropdownHeight: 300,
+                                      selectedOptionIcon:
+                                          const Icon(Icons.check_circle),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
                                 DropdownButtonFormField(
                                   dropdownColor: Colors.black,
                                   decoration: InputDecoration(
-                                    hintStyle: const TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(14),
-                                    ),
-                                  ),
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 17),
+                                      hintStyle: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 216, 71, 55))),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 216, 71, 55))),
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color(0xffE6E6E6))),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color(0xffE6E6E6))),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xffE6E6E6)))),
                                   hint: const Text("Channel Type"),
                                   value: channelType,
                                   items: const [
@@ -290,13 +379,34 @@ class _CreateChannelState extends State<CreateChannel> {
                                   DropdownButtonFormField(
                                     dropdownColor: Colors.black,
                                     decoration: InputDecoration(
+                                      contentPadding: const EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 17),
                                       hintStyle: const TextStyle(
                                         color: Colors.white,
                                       ),
+                                      focusedErrorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 216, 71, 55))),
+                                      errorBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color.fromARGB(
+                                                  255, 216, 71, 55))),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(14),
-                                      ),
-                                    ),
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color(0xffE6E6E6))),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          borderSide: const BorderSide(
+                                              color: Color(0xffE6E6E6))),
+                                      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: const BorderSide(color: Color(0xffE6E6E6)))),
                                     hint:
                                         const Text("Frequency of subscription"),
                                     value: subscriptionFrequency,
@@ -359,10 +469,16 @@ class _CreateChannelState extends State<CreateChannel> {
                                   if (_formKey.currentState!.validate()) {
                                     context.read<AppBloc>().add(
                                         CreateChannelEvent(
-                                          context: context,
+                                            context: context,
+                                            categories: categoryController
+                                                .selectedOptions
+                                                .map((e) => e.value!.tagSlug)
+                                                .join(","),
                                             channelDescription:
                                                 channelDescriptionController
                                                     .text,
+                                                    subType: subscriptionFrequency.name,
+                                                    amount: amountController.text.trim(),
                                             channelName:
                                                 channelNameController.text,
                                             image: channelImage,

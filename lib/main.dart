@@ -9,7 +9,7 @@ import 'package:beamify_creator/firebase_options.dart';
 import 'package:beamify_creator/shared/http/http_override.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/local_storage.dart';
-import 'package:beamify_creator/views/create_channel.dart';
+import 'package:beamify_creator/views/pages/home/channels/create_channel.dart';
 import 'package:beamify_creator/views/pages/onboarding/login.dart';
 import 'package:beamify_creator/views/pages/onboarding/onboarding.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:beamify_creator/controller/repository/signalling/php_signalling.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -26,7 +26,9 @@ void main() async {
   Storage.initStorage();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+  await PhpSignalling.initializePusher();
   runApp(
+    
     DevicePreview(
       // enabled: !kReleaseMode,
       enabled: false,

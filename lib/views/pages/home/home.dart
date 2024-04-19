@@ -36,7 +36,7 @@ class _CreatorHomeState extends State<CreatorHome> {
             Container(
               alignment: Alignment.bottomCenter,
               
-              height: 100,
+              height: kBottomNavigationBarHeight+MediaQuery.of(context).padding.bottom,
               padding: EdgeInsets.only(
                   bottom: MediaQuery.of(context).padding.bottom,
                   left: 24,

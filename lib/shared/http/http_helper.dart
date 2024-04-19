@@ -30,7 +30,7 @@ class HttpHelper {
     String url, {
     Map<String, dynamic> payload = const {},
   }) async {
-    print(payload);
+   
     try {
       final response = await http
           .post(Uri.parse(_baseUrl + url),
@@ -45,6 +45,7 @@ class HttpHelper {
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
 
       print(response.statusCode);
+      print(decodedJson);
       if (response.statusCode == AppStatusCode.successful ||
           response.statusCode == AppStatusCode.created) {
         return SuccessResponse.fromJson(decodedJson);
@@ -77,12 +78,13 @@ class HttpHelper {
       request.headers.addAll({"Accept": "application/json"});
       request.fields.addAll(payload);
       for (var file in files) {
-        request.files
-            .add(await http.MultipartFile.fromPath(file.keys.first, file.values.first.path));
+        request.files.add(await http.MultipartFile.fromPath(
+            file.keys.first, file.values.first.path));
       }
       http.StreamedResponse sendRequest = await request.send();
       final response = await http.Response.fromStream(sendRequest);
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
+      print(decodedJson);
 
       if (response.statusCode == AppStatusCode.successful ||
           response.statusCode == AppStatusCode.created) {

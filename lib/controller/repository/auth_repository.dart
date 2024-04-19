@@ -50,7 +50,7 @@ class AuthRepository {
     return response;
   }
 
-  Future<void> googleSignUp() async {
+  Future<HttpResponse> googleSignUp() async {
     GoogleSignIn googleSignIn = GoogleSignIn(
       scopes: [
         'email',
@@ -84,9 +84,17 @@ class AuthRepository {
 
     print("additional information");
     print(googleAuthentication.accessToken);
+
     if (googleAuthentication.accessToken != null) {
-      // HttpHelper.getRequest()
+      HttpResponse response =
+          await HttpHelper.postRequest("$sectionBaseUrl/login_with_google",payload: {"token": googleAuthentication.accessToken});
+      if (response is SuccessResponse) {
+        
+        token = response.result["token"];
+      }
+      return response;
     }
+    return ErrorResponse.defaultError(errorMessage:"please select a valid google account");
   }
 
   Future<HttpResponse> requestOtp(String email) async {
@@ -98,11 +106,8 @@ class AuthRepository {
 
   Future<HttpResponse> verifyOtp(String otp) async {
     HttpResponse response = await HttpHelper.postRequest(
-      "$sectionBaseUrl/otp/verify_otp",
-      payload: {
-        "otp":otp
-      }
-    );
+        "$sectionBaseUrl/otp/verify_otp",
+        payload: {"otp": otp});
 
     return response;
   }

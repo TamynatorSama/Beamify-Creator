@@ -1,13 +1,15 @@
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
+import 'package:beamify_creator/models/channel/channel_model.dart';
+// import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_svg/svg.dart';
 
 class NowStreamingView extends StatefulWidget {
+  final PodModel model;
   final ISignalling signalling;
-  const NowStreamingView(
-      {super.key, required this.signalling});
+  const NowStreamingView({super.key, required this.signalling,required this.model});
 
   @override
   State<NowStreamingView> createState() => _NowStreamingView();

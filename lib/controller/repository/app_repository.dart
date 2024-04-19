@@ -50,12 +50,21 @@ class AppRepository {
       {required String channelDescription,
       required String channelName,
       File? coverImage,
+      String? amount,String? frequency,
+      required String category,
       File? image,
       required String type}) async {
-    final payload = {
+    final payload = type.toLowerCase().contains("free") ?{
       'channel_name': channelName,
       'channel_description': channelDescription,
       'channel_type': type
+    }:{
+      'channel_name': channelName,
+      'channel_description': channelDescription,
+      'channel_type': type,
+      "interval":frequency??"",
+      'amount':amount??"",
+      "categories": category
     };
 
     List<Map<String, File>> uploadFiles = [];
@@ -83,30 +92,41 @@ class AppRepository {
       required String podType,
       required String podName,
       required String podDescription,
-      File? image,
-      required String type}) async {
+      DateTime? airDate,
+      required bool onAir,
+      required bool isBroadcasting}) async {
     final payload = {
       'channel_id': channelId,
       'pod_type': podType,
       'pod_name': podName,
+      'on_air': onAir,
+      'is_broadcasting': isBroadcasting,
       'pod_description': podDescription,
     };
-
-    List<Map<String, File>> uploadFiles = [];
-    if (image != null) {
-      uploadFiles.add({"channel_image": image});
+    if (airDate != null) {
+      payload["air_date"] = airDate.toIso8601String();
     }
-    return await HttpHelper.postFormRequest('pods',
-            payload: payload, files: uploadFiles)
-        .then((value) {
+
+
+    return await HttpHelper.postRequest('pods', payload: payload).then((value) {
       if (value.isSuccessful) {
         return (value as SuccessResponse).withConverter((json) {
-          print(json);
-          // final jsonData = value.result["channel"];
-          // return ChannelModel.fromJson(jsonData);
+          Map<String, dynamic> newValue = value.result["pod"];
+          return PodModel.fromJson(newValue);
         });
       }
       return value;
     });
+    // return await HttpHelper.postFormRequest('pods',
+    //         payload: payload, files: uploadFiles)
+    //     .then((value) {
+    // if (value.isSuccessful) {
+    //   return (value as SuccessResponse).withConverter((json) {
+    //     Map<String, dynamic> newValue = value.result["pod"];
+    //     return PodModel.fromJson(newValue);
+    //   });
+    // }
+    // return value;
+    // });
   }
 }

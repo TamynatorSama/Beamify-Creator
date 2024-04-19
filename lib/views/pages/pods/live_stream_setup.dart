@@ -1,12 +1,15 @@
+import 'dart:io';
+
 import 'package:beamify_creator/controller/repository/signalling/firebase_signalling.dart';
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/models/category_model.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/now_streaming_page.dart';
-import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_dropdown/multiselect_dropdown.dart';
 
@@ -23,16 +26,13 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
   late ISignalling signalling;
   final GlobalKey<PopupMenuButtonState> _popKey =
       GlobalKey<PopupMenuButtonState>();
-  final GlobalKey<PopupMenuButtonState> _categoryKey =
-      GlobalKey<PopupMenuButtonState>();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController eventTitleController = TextEditingController();
   TextEditingController presenter = TextEditingController();
+  TextEditingController description = TextEditingController();
   TextEditingController micSource = TextEditingController();
-  TextEditingController pictureUpload = TextEditingController();
-  MultiSelectController<CategoryModel> categoryController  = MultiSelectController<CategoryModel>();
   @override
   void initState() {
     signalling = FirebaseSignalling();
@@ -78,65 +78,15 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
                             child: Column(
                               children: [
                                 CustomInputField(
-                                  label: "Event Title*",
+                                  label: "Pod Title*",
                                   controller: eventTitleController,
-                                  hintText: 'Input Event Title Here',
+                                  hintText: 'Input pod Title Here',
                                 ),
                                 const SizedBox(height: 24),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      "Category",
-                                      style: AppTheme.bodyText.copyWith(
-                                          fontWeight: FontWeight.w700),
-                                    ),
-                                    const SizedBox(
-                                      height: 4,
-                                    ),
-                                  
-                                    MultiSelectDropDown<CategoryModel>(
-                                      onOptionSelected: (options) {
-                                        debugPrint(options.toString());
-                                      },
-                                      controller: categoryController,
-                                      optionsBackgroundColor: Colors.transparent,
-                                      optionTextStyle: AppTheme.bodyText,
-                                      suffixIcon: const Icon(
-                                        Icons.arrow_drop_down,
-                                        size: 30,
-                                        color: Colors.white,
-                                      ),
-                                      clearIcon: Icon(Icons.close,color: Colors.white,size: 20,),
-                                      animateSuffixIcon: false,
-                                      selectedOptionBackgroundColor: Colors.white.withOpacity(0.1),
-                                      
-                                      fieldBackgroundColor:
-                                          AppTheme.backgroundColor,
-                                      dropdownBackgroundColor: Colors.black,
-                                      dropdownBorderRadius: 10,
-                                      inputDecoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(14),
-                                          border: Border.all(
-                                              color: const Color(0xffE6E6E6))),
-                                      options: context
-                                          .read<AppBloc>()
-                                          .state
-                                          .tags
-                                          .map((e) => ValueItem(
-                                              label: e.tagSlug, value: e))
-                                          .toList(),
-                                      selectionType: SelectionType.multi,
-                                      chipConfig: const ChipConfig(
-                                        wrapType: WrapType.scroll,
-                                        backgroundColor: AppTheme.btnColor,
-                                      ),
-                                      dropdownHeight: 300,
-                                      selectedOptionIcon:
-                                          const Icon(Icons.check_circle),
-                                    ),
-                                  ],
+                                CustomInputField(
+                                  label: "Pod Description*",
+                                  controller: description,
+                                  hintText: 'Pod Decription',
                                 ),
                                 const SizedBox(height: 24),
                                 CustomInputField(
@@ -215,14 +165,6 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
                                           .toList()),
                                 ),
                                 const SizedBox(height: 24),
-                                CustomInputField(
-                                  label: 'Upload Event  Photo (Optional)',
-                                  controller: pictureUpload,
-                                  validator: (value) {
-                                    return null;
-                                  },
-                                  hintText: 'must be PNG, JPG, JPEG',
-                                ),
                               ],
                             )),
                         const Spacer(),
@@ -231,15 +173,32 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
                           text: "Save and Go Live",
                           onTap: () async {
                             if (_formKey.currentState!.validate()) {
+                              context.read<AppBloc>().add(CreatePodEvent(
+                                context,
+                                    channelId: context
+                                        .read<AppBloc>()
+                                        .state
+                                        .channels
+                                        .first
+                                        .id
+                                        .toString(),
+                                    podType: "public",
+                                    podName: eventTitleController.text.trim(),
+                                    podDescription: description.text.trim(),
+                                    successFeedback: (model)async{
+                                      await signalling.openUserMedia().then((_) =>
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              NowStreamingView(
+                                                signalling: signalling,
+                                                model: model!,
+                                              ))));
+                                    }
+                                  ));
+
                               
-                              // await signalling.openUserMedia().then((_) =>
-                              //     Navigator.push(
-                              //         context,
-                              //         MaterialPageRoute(
-                              //             builder: (context) =>
-                              //                 NowStreamingView(
-                              //                   signalling: signalling,
-                              //                 ))));
                             }
 
                             // WebRtcTest.startPod("samuel");
@@ -256,42 +215,3 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
   }
 }
 
-Widget _txtField(String title, String hint) => Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 12.0, bottom: 4),
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white,
-            ),
-          ),
-        ),
-        customTextField(hintText: hint),
-      ],
-    );
-
-Widget _header() => Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 4,
-        vertical: 16,
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: Colors.white,
-          ),
-          Text(
-            'Live Stream Setup',
-            style: TextStyle(
-              fontSize: 22,
-              color: Colors.white,
-            ),
-          ),
-          SizedBox(),
-        ],
-      ),
-    );

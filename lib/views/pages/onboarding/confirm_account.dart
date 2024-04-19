@@ -56,7 +56,7 @@ class _ConfirmAccountState extends State<ConfirmAccount> {
                 height: 30,
               ),
               Pinput(
-                length: 6,
+                length: 4,
                 controller: controller,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 // controller: controller.otpController,

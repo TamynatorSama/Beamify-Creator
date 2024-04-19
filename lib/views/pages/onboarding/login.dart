@@ -186,7 +186,13 @@ class _LoginPageState extends State<LoginPage> {
                             spacing: 30,
                             children: [
                               buildSocialLogins("assets/images/facebook.svg"),
-                              buildSocialLogins("assets/images/google.svg"),
+                              GestureDetector(
+                                onTap:(){
+                                  context.read<AuthBloc>().add(GoogleSignupEvent(context)
+                                          );
+                                },child:buildSocialLogins("assets/images/google.svg"),
+                              ),
+                              
                               buildSocialLogins("assets/images/apple.svg")
                             ],
                           ),

@@ -3,7 +3,11 @@ import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/models/user_model.dart';
-import 'package:beamify_creator/shared/http/http_helper.dart';
+import 'package:beamify_creator/views/pages/home/channels/channel_single_view.dart';
+import 'package:beamify_creator/views/pages/home/channels/widget/empty_pod.dart';
+import 'package:beamify_creator/views/pages/home/channels/widget/event_builder.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:get_time_ago/get_time_ago.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:flutter/material.dart';
@@ -50,43 +54,43 @@ class _ChannelsPage extends State<ChannelsPage> {
     super.didChangeDependencies();
   }
 
-  List<Map<String, dynamic>> dummyChannelData = [
-    {
-      "imagePath": "assets/images/Jesus_the_Light_of_the_world.jpg",
-      "title": "Victory Prayers",
-      "creator": "AFM Mafoluku"
-    },
-    {
-      "imagePath": "assets/images/prayer_woman.jpg",
-      "title": "Women’s Prayers",
-      "creator": "AFM Nsisuk"
-    },
-    {
-      "imagePath": "assets/images/concecration.jpg",
-      "title": "Parents Heaven",
-      "creator": "Liza Riyad Podcast"
-    }
-  ];
-  List<Map<String, dynamic>> dummyEventData = [
-    {
-      "imagePath": "assets/images/Jesus_the_Light_of_the_world.jpg",
-      "title": "God’s Promises",
-      "tags": "AFM Anthony || Bible Studies || Jk Biodun ",
-      "time_ago": "Live since 25 min ago"
-    },
-    {
-      "imagePath": "assets/images/prayer_woman.jpg",
-      "title": "Pray and Grateful",
-      "tags": "AFM Mafoluku || Bible Studies || Jk Biodun",
-      "time_ago": "Live since  45 min ago"
-    },
-    {
-      "imagePath": "assets/images/concecration.jpg",
-      "title": "Thanksgiving to God",
-      "tags": "AFM Ketu || Bible Studies || Jk Biodun ",
-      "time_ago": "Live since  45 min ago"
-    }
-  ];
+  // List<Map<String, dynamic>> dummyChannelData = [
+  //   {
+  //     "imagePath": "assets/images/Jesus_the_Light_of_the_world.jpg",
+  //     "title": "Victory Prayers",
+  //     "creator": "AFM Mafoluku"
+  //   },
+  //   {
+  //     "imagePath": "assets/images/prayer_woman.jpg",
+  //     "title": "Women’s Prayers",
+  //     "creator": "AFM Nsisuk"
+  //   },
+  //   {
+  //     "imagePath": "assets/images/concecration.jpg",
+  //     "title": "Parents Heaven",
+  //     "creator": "Liza Riyad Podcast"
+  //   }
+  // ];
+  // List<Map<String, dynamic>> dummyEventData = [
+  //   {
+  //     "imagePath": "assets/images/Jesus_the_Light_of_the_world.jpg",
+  //     "title": "God’s Promises",
+  //     "tags": "AFM Anthony || Bible Studies || Jk Biodun ",
+  //     "time_ago": "Live since 25 min ago"
+  //   },
+  //   {
+  //     "imagePath": "assets/images/prayer_woman.jpg",
+  //     "title": "Pray and Grateful",
+  //     "tags": "AFM Mafoluku || Bible Studies || Jk Biodun",
+  //     "time_ago": "Live since  45 min ago"
+  //   },
+  //   {
+  //     "imagePath": "assets/images/concecration.jpg",
+  //     "title": "Thanksgiving to God",
+  //     "tags": "AFM Ketu || Bible Studies || Jk Biodun ",
+  //     "time_ago": "Live since  45 min ago"
+  //   }
+  // ];
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +224,10 @@ class _ChannelsPage extends State<ChannelsPage> {
                   const SizedBox(
                     height: 25,
                   ),
-                  SingleChildScrollView(
+                  cont.channels.isEmpty? Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: emptyPod(message: "You have no channels"),
+                  ) :SingleChildScrollView(
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
@@ -230,7 +237,7 @@ class _ChannelsPage extends State<ChannelsPage> {
                         cont.channels.length,
                         (index) => Padding(
                           padding: EdgeInsets.only(
-                              right: index == dummyChannelData.length - 1
+                              right: index == cont.channels.length - 1
                                   ? 0
                                   : 25),
                           child:
@@ -254,19 +261,36 @@ class _ChannelsPage extends State<ChannelsPage> {
                         const SizedBox(
                           height: 25,
                         ),
-                        cont.channels.last.pods.isEmpty?_emptyPod(): Column(
-                          children: List.generate(
-                              dummyEventData.length,
-                              (index) => Padding(
-                                  padding: EdgeInsets.only(
-                                      bottom:
-                                          index == dummyChannelData.length - 1
-                                              ? 0
-                                              : 25),
-                                  child: _eventBuilder(
-                                    dummyEventData[index],
-                                  ))),
-                        )
+                        Builder(builder: (context) {
+                          List<PodModel> displayModel = [];
+
+                          for (ChannelModel mod in cont.channels) {
+                            for (PodModel casts in mod.pods) {
+                              if (displayModel.length > 5) break;
+                              if (casts.isOnAir ||
+                                  casts.isBroadcasting ||
+                                  casts.airDate.day == DateTime.now().day) {
+                                displayModel.add(casts);
+                              }
+                            }
+                          }
+                          return displayModel.isEmpty
+                              ? emptyPod()
+                              : Column(
+                                  children: List.generate(
+                                      displayModel.length,
+                                      (index) => Padding(
+                                          padding: EdgeInsets.only(
+                                              bottom: index ==
+                                                      displayModel.length -
+                                                          1
+                                                  ? 0
+                                                  : 25),
+                                          child: eventBuilder(
+                                            displayModel[index],
+                                          ))),
+                                );
+                        })
                         // Expanded(
                         //     child: ListView.builder(
                         //       clipBehavior: Clip.antiAlias,
@@ -277,6 +301,7 @@ class _ChannelsPage extends State<ChannelsPage> {
                       ],
                     ),
                   )
+                
                 ],
               ),
             ),
@@ -286,57 +311,13 @@ class _ChannelsPage extends State<ChannelsPage> {
     });
   }
 
-  Widget _eventBuilder(Map<String, dynamic> data) => GestureDetector(
-        // onTap: ()=>Navigator.of(context).push(MaterialPageRoute(
-        // builder: (context) => StreamingPage(data: data,))),
-        child: Row(
-          children: [
-            Container(
-              height: 55,
-              width: 55,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(
-                      image: AssetImage(data["imagePath"]), fit: BoxFit.cover)),
-            ),
-            const SizedBox(
-              width: 15,
-            ),
-            Expanded(
-                child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data['title'],
-                  style: AppTheme.headerStyle.copyWith(fontSize: 17),
-                ),
-                Text(
-                  data['tags'],
-                  style: AppTheme.bodyTextLight.copyWith(fontSize: 11),
-                ),
-                Text(
-                  data['time_ago'],
-                  style: AppTheme.bodyTextLight.copyWith(fontSize: 11),
-                ),
-              ],
-            )),
-            const SizedBox(
-              width: 15,
-            ),
-            CircleAvatar(
-              backgroundColor: Colors.white,
-              child: SvgPicture.asset("assets/icons/play.svg"),
-            )
-          ],
-        ),
-      );
-
+ 
   Widget _buildChannelCard(BuildContext context, ChannelModel data) {
     double imageSize = MediaQuery.of(context).size.width * 0.45;
 
     return GestureDetector(
-      //   onTap: ()=>Navigator.of(context).push(MaterialPageRoute(
-      // builder: (context) => ChannelView(data: data,))),
+        onTap: ()=>Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => SingleChannelView(model: data,))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -346,16 +327,20 @@ class _ChannelsPage extends State<ChannelsPage> {
             width: imageSize,
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(12),
-                // image: DecorationImage(
-                //     image: NetworkImage(
-                //         'https://beamify.stream/${data.channelImage}'),
-                //     fit: BoxFit.cover)
-                    ),
-                    child: data.channelImage.isEmpty? Padding(
-                      padding: const EdgeInsets.all(45.0),
-                      child: Image.asset("assets/images/Audio track.png"),
-                    ) : Image.network('https://beamify.stream/${data.channelImage}',fit: BoxFit.cover),
+              borderRadius: BorderRadius.circular(12),
+              // image: DecorationImage(
+              //     image: NetworkImage(
+              //         'https://beamify.stream/${data.channelImage}'),
+              //     fit: BoxFit.cover)
+            ),
+            child: data.channelImage.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(45.0),
+                    child: Image.asset("assets/images/Audio track.png"),
+                  )
+                : CachedNetworkImage(imageUrl:'https://beamify.stream/${data.channelImage}',
+                cacheKey: data.channelImage,
+                    fit: BoxFit.cover),
           ),
           const SizedBox(
             height: 10,
@@ -427,13 +412,3 @@ class _ChannelsPage extends State<ChannelsPage> {
       );
 }
 
-Widget _emptyPod() => Container(
-  height: 150,
-  decoration: BoxDecoration(
-    color:AppTheme.backgroundColor.withOpacity(0.3),
-    borderRadius:   BorderRadius.circular(10)
-  ),
-  child: Center(
-    child: Text("No Active Pods",style: AppTheme.headerStyle.copyWith(color: Colors.white.withOpacity(0.3)),),
-  ),
-);

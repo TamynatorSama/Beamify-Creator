@@ -30,7 +30,8 @@ class RegisterEvent extends AuthEvent {
 }
 
 class GoogleSignupEvent extends AuthEvent {
-  const GoogleSignupEvent();
+  final BuildContext context;
+  const GoogleSignupEvent(this.context);
 }
 
 class SendOtpEvent extends AuthEvent {

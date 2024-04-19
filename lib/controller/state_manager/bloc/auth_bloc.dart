@@ -6,7 +6,7 @@ import 'package:beamify_creator/controller/state_manager/events/auth_event.dart'
 
 import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
-import 'package:beamify_creator/views/confirm_account.dart';
+import 'package:beamify_creator/views/pages/onboarding/confirm_account.dart';
 import 'package:beamify_creator/views/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -75,7 +75,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       });
     });
     on<GoogleSignupEvent>((event, emit) async {
-      await repository.googleSignUp();
+      await repository.googleSignUp().then((value){
+        if (value is ValidationError) {
+          event.errorCallback!(value.errors.first.errorMessage.first);
+          return;
+        }
+        if (value is ErrorResponse) {
+          event.errorCallback!(value.message);
+          return;
+        }
+
+        // if (value is SuccessResponse) {
+        //   print(value.result["is_email_verified"]);
+        //   bool isVerified =
+        //       bool.tryParse((value.result["is_email_verified"]??"0")=="0"?"false":"true") ?? false;
+        //   print(isVerified);
+        // }
+        Navigator.of(event.context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const CreatorHome()));
+      
+      });
+      
     });
     on<SendOtpEvent>((event, emit) async {
       await repository.requestOtp(event.email).then((value) {
