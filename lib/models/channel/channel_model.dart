@@ -19,9 +19,8 @@ class ChannelModel {
           channelName: channelName ?? this.channelName,
           channelDescription: channelDescription ?? this.channelDescription,
           pods: pods ?? this.pods,
-          channelCoverImage: channelCoverImage?? this.channelCoverImage,
-          channelImage: channelImage ?? this.channelImage
-          );
+          channelCoverImage: channelCoverImage ?? this.channelCoverImage,
+          channelImage: channelImage ?? this.channelImage);
 
   const ChannelModel(
       {required this.id,
@@ -53,6 +52,7 @@ class PodModel {
   final bool isOnAir;
   final String likes;
   final int channelId;
+  final String podTag;
   final String viewerCount;
   final String commentCount;
   final bool isBroadcasting;
@@ -65,6 +65,7 @@ class PodModel {
       required this.podDescription,
       required this.podId,
       this.image = "",
+      required this.podTag,
       required this.channelId,
       required this.commentCount,
       required this.likes,
@@ -77,6 +78,7 @@ class PodModel {
               ? json["air_date"]
               : json["air_date"]["date"] ?? "") ??
           DateTime.now(),
+          podTag: json["pod_tag"],
       channelId: int.parse(json["channel_id"].toString()),
       creatorId: json["creator_id"].toString(),
       isBroadcasting: json['is_broadcasting'],

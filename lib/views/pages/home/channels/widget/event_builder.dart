@@ -13,8 +13,18 @@ Widget eventBuilder(PodModel data) => GestureDetector(
           children: [
             Stack(
               children: [
-                if(data.isBroadcasting) 
-                          Image.asset("assets/images/live__indicator.png"),
+                // if(data.isBroadcasting) 
+                          Transform.translate(
+                            offset: const Offset(0, -5),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal:7),
+                              decoration: const ShapeDecoration(
+                                shape: StadiumBorder(),
+                                color: AppTheme.primaryColor
+                                ),
+                              child: Text(data.podTag,style: AppTheme.headerStyle.copyWith(fontSize: 9),),
+                            ),
+                          ),
                 Container(
                   height: 55,
                   width: 55,
