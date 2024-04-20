@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:beamify_creator/controller/repository/auth_repository.dart';
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/pusher_event_names.dart';
@@ -76,8 +77,13 @@ class PhpSignalling extends ISignalling {
   }
 
   setAnswer({required Map<String, dynamic> payload}) async {
-    RTCPeerConnection currentConnect =
-        connections[payload["offerObject"]["userId"].toString()]!;
+    // if (payload["offerObject"]["userId"].toString() != AuthRepository.userId)
+    //   return;
+    RTCPeerConnection? currentConnect =
+        connections[payload["offerObject"]["userId"].toString()];
+    if (currentConnect == null) {
+      return;
+    }
 
     final newOffer = jsonDecode(payload["offerObject"]["offer"]);
     var answer = RTCSessionDescription(
@@ -90,8 +96,11 @@ class PhpSignalling extends ISignalling {
   addIceCandidates({required Map<String, dynamic> payload}) {
     if (payload["iceCandidateObject"]["isCreator"]) return;
 
-    RTCPeerConnection currentConnect =
-        connections[payload["iceCandidateObject"]["userId"].toString()]!;
+    RTCPeerConnection? currentConnect =
+        connections[payload["iceCandidateObject"]["userId"].toString()];
+        if (currentConnect == null) {
+      return;
+    }
 
     Map<String, dynamic> candidate =
         jsonDecode(payload["iceCandidateObject"]["iceCandidate"]);
@@ -196,11 +205,13 @@ class PhpSignalling extends ISignalling {
 
         bool isNetworkConnectedOnCall =
             await _flutterNetworkConnectivity.isInternetConnectionAvailable();
+        print(isNetworkConnectedOnCall);
 
-        Future.delayed(const Duration(seconds: 5)).then((value) async {
+        await Future.delayed(const Duration(seconds: 5)).then((value) async {
           if (isNetworkConnectedOnCall &&
               pusher.connectionState != "DISCONNECTED") {
             print("re doing it here");
+            pusher.connect();
             createPod(userId: userId!);
           }
         });

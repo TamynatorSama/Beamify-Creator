@@ -33,6 +33,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         if (value is SuccessResponse) {
           print(value.result["is_email_verified"]);
+        
           bool isVerified =
               bool.tryParse((value.result["is_email_verified"]??"0")=="0"?"false":"true") ?? false;
           print(isVerified);

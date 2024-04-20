@@ -8,14 +8,22 @@ import 'package:flutter/foundation.dart';
 class AuthRepository {
   static bool hasOpendApp = false;
   static String? _token;
+  static String? _userId;
   static String sectionBaseUrl = "auth";
 
   static String get token => _token ?? "";
+  static String get userId => _userId ?? "";
 
   static set token(String? value) {
     Storage.storage.write(key: "token", value: value);
 
     _token = value;
+  }
+
+  static set userId(String? value) {
+    Storage.storage.write(key: "user_id", value: value);
+
+    _userId = value;
   }
 
   Future<HttpResponse> login(
@@ -86,15 +94,16 @@ class AuthRepository {
     print(googleAuthentication.accessToken);
 
     if (googleAuthentication.accessToken != null) {
-      HttpResponse response =
-          await HttpHelper.postRequest("$sectionBaseUrl/login_with_google",payload: {"token": googleAuthentication.accessToken});
+      HttpResponse response = await HttpHelper.postRequest(
+          "$sectionBaseUrl/login_with_google",
+          payload: {"token": googleAuthentication.accessToken});
       if (response is SuccessResponse) {
-        
         token = response.result["token"];
       }
       return response;
     }
-    return ErrorResponse.defaultError(errorMessage:"please select a valid google account");
+    return ErrorResponse.defaultError(
+        errorMessage: "please select a valid google account");
   }
 
   Future<HttpResponse> requestOtp(String email) async {

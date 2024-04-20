@@ -1,8 +1,10 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:beamify_creator/controller/repository/app_repository.dart';
+import 'package:beamify_creator/controller/repository/auth_repository.dart';
 import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
+import 'package:beamify_creator/models/user_model.dart';
 import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:bloc/bloc.dart';
@@ -30,7 +32,9 @@ class AppBloc extends Bloc<AppEvent, AppState> {
 
         await _appRepository.getUserProfile().then((value) {
           if (value.isSuccessful) {
-            emit(state.copyWith(newUser: (value as SuccessResponse).result));
+            AuthRepository.userId =
+                ((value as SuccessResponse).result as UserModel).id.toString();
+            emit(state.copyWith(newUser: value.result));
           }
         });
 
