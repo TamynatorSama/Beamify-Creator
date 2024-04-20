@@ -18,7 +18,26 @@ class PhpSignalling extends ISignalling {
     await pusher.init(
       apiKey: '1f7df03a521dcdf62073',
       cluster: 'sa1',
-      
+      onEvent: (event) {
+        try {
+          switch (event.eventName.toLowerCase()) {
+            case "on_ice_candidate":
+              Map<String, dynamic> json = jsonDecode(event.data);
+              addIceCandidate(payload: json);
+              break;
+            case "on_offer":
+              Map<String, dynamic> json = jsonDecode(event.data);
+              // print(json);
+              setAndSendAnswer(json["offerObject"]["userId"].toString(),
+                  json["offerObject"]["offer"]);
+              break;
+            default:
+              break;
+          }
+        } catch (e) {
+          print(e);
+        }
+      },
     );
     pusher.connect();
 
@@ -170,24 +189,24 @@ class PhpSignalling extends ISignalling {
     await pusher.subscribe(
       channelName: 'pods.1',
       onEvent: (event) {
-        try {
-          switch (event.eventName.toLowerCase()) {
-            case "on_ice_candidate":
-              Map<String, dynamic> json = jsonDecode(event.data);
-              addIceCandidate(payload: json);
-              break;
-            case "on_offer":
-              Map<String, dynamic> json = jsonDecode(event.data);
-              // print(json);
-              setAndSendAnswer(json["offerObject"]["userId"].toString(),
-                  json["offerObject"]["offer"]);
-              break;
-            default:
-              break;
-          }
-        } catch (e) {
-          print(e);
-        }
+        // try {
+        //   switch (event.eventName.toLowerCase()) {
+        //     case "on_ice_candidate":
+        //       Map<String, dynamic> json = jsonDecode(event.data);
+        //       addIceCandidate(payload: json);
+        //       break;
+        //     case "on_offer":
+        //       Map<String, dynamic> json = jsonDecode(event.data);
+        //       // print(json);
+        //       setAndSendAnswer(json["offerObject"]["userId"].toString(),
+        //           json["offerObject"]["offer"]);
+        //       break;
+        //     default:
+        //       break;
+        //   }
+        // } catch (e) {
+        //   print(e);
+        // }
       },
     );
     await HttpHelper.postRequest('pods/1/join').then((value) async {
