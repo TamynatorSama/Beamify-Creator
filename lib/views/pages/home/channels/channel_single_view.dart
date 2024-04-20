@@ -1,14 +1,29 @@
 import 'package:beamify_creator/controller/repository/signalling/php_signalling.dart';
+import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/views/pages/home/channels/widget/empty_pod.dart';
 import 'package:beamify_creator/views/pages/home/channels/widget/event_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class SingleChannelView extends StatelessWidget {
+class SingleChannelView extends StatefulWidget {
   final ChannelModel model;
   const SingleChannelView({super.key, required this.model});
+
+  @override
+  State<SingleChannelView> createState() => _SingleChannelViewState();
+}
+
+class _SingleChannelViewState extends State<SingleChannelView> {
+  late ISignalling signalling;
+
+  @override
+  void initState() {
+    signalling = PhpSignalling();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +44,14 @@ class SingleChannelView extends StatelessWidget {
                         horizontal: 24),
                     width: double.maxFinite,
                     decoration: BoxDecoration(
-                        image: model.channelCoverImage.isEmpty
+                        image: widget.model.channelCoverImage.isEmpty
                             ? const DecorationImage(
                                 image:
                                     AssetImage("assets/images/record_room.jpg"),
                                 fit: BoxFit.cover)
                             : DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    model.channelCoverImage),
+                                    widget.model.channelCoverImage),
                                 fit: BoxFit.cover),
                         backgroundBlendMode: BlendMode.overlay,
                         gradient: const LinearGradient(
@@ -103,16 +118,16 @@ class SingleChannelView extends StatelessWidget {
                     decoration: BoxDecoration(
                         color: Colors.black.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(15)),
-                    child: model.channelImage.isEmpty
+                    child: widget.model.channelImage.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.all(45.0),
                             child: Image.asset("assets/images/Audio track.png"),
                           )
                         : CachedNetworkImage(
                             imageUrl:
-                                'https://beamify.stream/${model.channelImage}',
+                                'https://beamify.stream/${widget.model.channelImage}',
                             width: double.maxFinite,
-                            cacheKey: model.channelImage,
+                            cacheKey: widget.model.channelImage,
 
                             // fit: BoxFit.cover
                           ),
@@ -131,10 +146,12 @@ class SingleChannelView extends StatelessWidget {
                   children: [
                     _buildStats(
                         title: "Followers",
-                        value: model.pods.isEmpty ? "0": model.pods
-                            .map((e) => int.parse(e.likes))
-                            .reduce((value, element) => element + value)
-                            .toString()),
+                        value: widget.model.pods.isEmpty
+                            ? "0"
+                            : widget.model.pods
+                                .map((e) => int.parse(e.likes))
+                                .reduce((value, element) => element + value)
+                                .toString()),
                     Container(
                         margin: EdgeInsets.symmetric(
                             horizontal:
@@ -146,7 +163,8 @@ class SingleChannelView extends StatelessWidget {
                         height: 20,
                         color: const Color.fromARGB(167, 142, 142, 142)),
                     _buildStats(
-                        title: "Pods", value: model.pods.length.toString()),
+                        title: "Pods",
+                        value: widget.model.pods.length.toString()),
                     Container(
                         margin: EdgeInsets.symmetric(
                             horizontal:
@@ -159,10 +177,12 @@ class SingleChannelView extends StatelessWidget {
                         color: const Color.fromARGB(167, 142, 142, 142)),
                     _buildStats(
                         title: "Listeners",
-                        value: model.pods.isEmpty ? "0":  model.pods
-                            .map((e) => int.parse(e.viewerCount))
-                            .reduce((value, element) => element + value)
-                            .toString())
+                        value: widget.model.pods.isEmpty
+                            ? "0"
+                            : widget.model.pods
+                                .map((e) => int.parse(e.viewerCount))
+                                .reduce((value, element) => element + value)
+                                .toString())
                   ],
                 ),
                 const SizedBox(height: 32),
@@ -176,26 +196,33 @@ class SingleChannelView extends StatelessWidget {
                     const SizedBox(
                       height: 25,
                     ),
-                    model.pods.isEmpty
-                          ? emptyPod()
-                          : Column(
-                              children: List.generate(
-                                  model.pods.length,
-                                  (index) => Padding(
-                                      padding: EdgeInsets.only(
-                                          bottom:
-                                              index == model.pods.length - 1
-                                                  ? 0
-                                                  : 25),
-                                      child: InkWell(
-                                        onTap: ()=>PhpSignalling().tiggerEvent(model.pods[index].podId.toString()),
-                                        child: eventBuilder(
-                                          
-                                          model.pods[index],
-                                        ),
-                                      ))),
-                            ),
-                    
+                    widget.model.pods.isEmpty
+                        ? emptyPod()
+                        : Column(
+                            children: List.generate(
+                                widget.model.pods.length,
+                                (index) => Padding(
+                                    padding: EdgeInsets.only(
+                                        bottom: index ==
+                                                widget.model.pods.length - 1
+                                            ? 0
+                                            : 25),
+                                    child: InkWell(
+                                      onTap: () {
+                                        PhpSignalling().joinPod(widget
+                                            .model.pods[index].podId
+                                            .toString());
+                                      },
+                                      child: eventBuilder(
+                                        widget.model.pods[index],
+                                      ),
+                                    ))),
+                          ),
+
+                    if ((signalling as PhpSignalling).remoteRenderer !=
+                        null)
+                      RTCVideoView(
+                          (signalling as PhpSignalling).remoteRenderer!)
                     // Expanded(
                     //     child: ListView.builder(
                     //       clipBehavior: Clip.antiAlias,

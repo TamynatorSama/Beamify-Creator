@@ -30,7 +30,7 @@ class HttpHelper {
     String url, {
     Map<String, dynamic> payload = const {},
   }) async {
-   
+    print(payload);
     try {
       final response = await http
           .post(Uri.parse(_baseUrl + url),
