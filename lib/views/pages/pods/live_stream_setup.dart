@@ -1,17 +1,12 @@
-import 'dart:io';
-
 import 'package:beamify_creator/controller/repository/signalling/firebase_signalling.dart';
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
-import 'package:beamify_creator/models/category_model.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:beamify_creator/views/now_streaming_page.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_dropdown/multiselect_dropdown.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -186,15 +181,16 @@ class _LiveStreamSetup extends State<LiveStreamSetup> {
                                     podName: eventTitleController.text.trim(),
                                     podDescription: description.text.trim(),
                                     successFeedback: (model)async{
-                                      await signalling.openUserMedia().then((_) =>
+                                      // await signalling.openUserMedia().then((_) =>
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               NowStreamingView(
-                                                signalling: signalling,
+                                                
                                                 model: model!,
-                                              ))));
+                                              )));
+                                              
                                     }
                                   ));
 

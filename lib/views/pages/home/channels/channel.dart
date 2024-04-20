@@ -1,5 +1,7 @@
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/bloc/pod_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/pod_events.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/models/user_model.dart';
@@ -7,7 +9,7 @@ import 'package:beamify_creator/views/pages/home/channels/channel_single_view.da
 import 'package:beamify_creator/views/pages/home/channels/widget/empty_pod.dart';
 import 'package:beamify_creator/views/pages/home/channels/widget/event_builder.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:get_time_ago/get_time_ago.dart';
+// import 'package:get_time_ago/get_time_ago.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
 import 'package:flutter/material.dart';
@@ -286,8 +288,11 @@ class _ChannelsPage extends State<ChannelsPage> {
                                                           1
                                                   ? 0
                                                   : 25),
-                                          child: eventBuilder(
-                                            displayModel[index],
+                                          child: GestureDetector(
+                                            onTap: ()=>context.read<PodBloc>().add(CheckForEventUser(context: context, podId: displayModel[index].podId.toString())),
+                                            child: eventBuilder(
+                                              displayModel[index],
+                                            ),
                                           ))),
                                 );
                         })

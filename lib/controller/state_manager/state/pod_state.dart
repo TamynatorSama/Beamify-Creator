@@ -1,0 +1,3 @@
+class PodState {
+  const PodState();
+}

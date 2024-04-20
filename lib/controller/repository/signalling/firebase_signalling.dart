@@ -176,7 +176,7 @@ class FirebaseSignalling implements ISignalling {
   }
 
   @override
-  void registerPeerConnectionListeners(RTCPeerConnection peerConnection) {
+  void registerPeerConnectionListeners(RTCPeerConnection peerConnection,{String? userId}) {
     peerConnection.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE gathering state changed: $state');
     };

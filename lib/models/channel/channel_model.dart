@@ -6,6 +6,23 @@ class ChannelModel {
   final String channelCoverImage;
   final List<PodModel> pods;
 
+  ChannelModel copyWith({
+    int? id,
+    List<PodModel>? pods,
+    String? channelCoverImage,
+    String? channelName,
+    String? channelDescription,
+    String? channelImage,
+  }) =>
+      ChannelModel(
+          id: id ?? this.id,
+          channelName: channelName ?? this.channelName,
+          channelDescription: channelDescription ?? this.channelDescription,
+          pods: pods ?? this.pods,
+          channelCoverImage: channelCoverImage?? this.channelCoverImage,
+          channelImage: channelImage ?? this.channelImage
+          );
+
   const ChannelModel(
       {required this.id,
       required this.channelName,
@@ -19,7 +36,7 @@ class ChannelModel {
       channelName: json['channel_name'],
       channelDescription: json['channel_description'],
       channelImage: json['channel_image'] ?? "",
-      pods:((json['pods'] ??[])as List<dynamic>)
+      pods: ((json['pods'] ?? []) as List<dynamic>)
           .map((e) => PodModel.fromJson(e))
           .toList(),
       channelCoverImage: json['cover_image'] ?? "");
@@ -35,6 +52,7 @@ class PodModel {
   final DateTime airDate;
   final bool isOnAir;
   final String likes;
+  final int channelId;
   final String viewerCount;
   final String commentCount;
   final bool isBroadcasting;
@@ -46,7 +64,8 @@ class PodModel {
       required this.isOnAir,
       required this.podDescription,
       required this.podId,
-      this.image="",
+      this.image = "",
+      required this.channelId,
       required this.commentCount,
       required this.likes,
       required this.viewerCount,
@@ -54,7 +73,11 @@ class PodModel {
       required this.podType});
 
   factory PodModel.fromJson(Map<String, dynamic> json) => PodModel(
-      airDate: DateTime.tryParse((json["air_date"] is String) ? json["air_date"]:json["air_date"]["date"] ?? "") ?? DateTime.now(),
+      airDate: DateTime.tryParse((json["air_date"] is String)
+              ? json["air_date"]
+              : json["air_date"]["date"] ?? "") ??
+          DateTime.now(),
+      channelId: int.parse(json["channel_id"].toString()),
       creatorId: json["creator_id"].toString(),
       isBroadcasting: json['is_broadcasting'],
       isOnAir: json["on_air"],

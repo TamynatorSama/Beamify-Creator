@@ -2,6 +2,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:beamify_creator/controller/repository/app_repository.dart';
 import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
+import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/FeedbackDialog/error_dialog.dart';
 import 'package:bloc/bloc.dart';
@@ -10,6 +11,9 @@ import 'package:flutter/widgets.dart';
 class AppBloc extends Bloc<AppEvent, AppState> {
   final AppRepository _appRepository;
   AppBloc(this._appRepository) : super(AppState.defaultState()) {
+    on<UpdateAppState>((event, emit) {
+      emit(event.state);
+    });
     on<InitData>((event, emit) async {
       emit(state.copyWith(isLoading: true));
       await () async {
@@ -107,8 +111,15 @@ class AppBloc extends Bloc<AppEvent, AppState> {
           await showErrorFeedback(event.context,
               isError: false, message: value.message);
           event.successFeedback(value.result);
+          PodModel newPod = value.result;
+          List<ChannelModel> updatedList = state.channels.map((element) {
+            if (element.id == newPod.channelId) {
+              element.copyWith(pods: [...element.pods, newPod]);
+            }
+            return element;
+          }).toList();
 
-          emit(state.copyWith(channels: [...state.channels, value.result]));
+          emit(state.copyWith(channels: updatedList));
         }
       });
     });

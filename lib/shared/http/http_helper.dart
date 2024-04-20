@@ -11,6 +11,8 @@ class HttpHelper {
   static Future<HttpResponse> getRequest(String url, {String? query}) async {
     try {
       final response = await http.get(Uri.parse(_baseUrl + url), headers: {
+        "Content-Type": "application/json",
+                "Accept": "application/json",
         "Authorization": "Bearer ${AuthRepository.token}"
       }).timeout(const Duration(seconds: 60));
       print(response.body);

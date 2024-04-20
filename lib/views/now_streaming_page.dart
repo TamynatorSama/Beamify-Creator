@@ -1,15 +1,18 @@
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
+import 'package:beamify_creator/controller/state_manager/bloc/pod_bloc.dart';
+import 'package:beamify_creator/controller/state_manager/events/pod_events.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
+import 'package:beamify_creator/shared/utils/app_theme.dart';
 // import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
 class NowStreamingView extends StatefulWidget {
   final PodModel model;
-  final ISignalling signalling;
-  const NowStreamingView({super.key, required this.signalling,required this.model});
+  const NowStreamingView({super.key,required this.model});
 
   @override
   State<NowStreamingView> createState() => _NowStreamingView();
@@ -18,8 +21,9 @@ class NowStreamingView extends StatefulWidget {
 class _NowStreamingView extends State<NowStreamingView> {
   @override
   void initState() {
+
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      await widget.signalling.createPod();
+      context.read<PodBloc>().add(TriggerEventStarter(widget.model.podId.toString()));
     });
     super.initState();
   }
@@ -43,7 +47,7 @@ class _NowStreamingView extends State<NowStreamingView> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14.0),
-            child: _nameTile(),
+            child: _nameTile(widget.model),
           ),
           const SizedBox(
             height: 8,
@@ -85,45 +89,48 @@ Widget _bottomOptions() => const Padding(
       ),
     );
 
-Widget progress() => const SizedBox(
+Widget progress() => SizedBox(
       width: 260,
       child: Row(
         children: [
-          Text(
-            '22:34',
+          const Text(
+            '00:00',
             style: TextStyle(
               fontSize: 11,
               color: Colors.white,
             ),
           ),
-          SizedBox(
+          const SizedBox(
             width: 8,
           ),
           Expanded(
             child: LinearProgressIndicator(
-              value: 0.6,
-              color: Color(0xFFFF7848),
+              value: 1,
+              minHeight: 7,
+              borderRadius: BorderRadius.circular(30),
+              color: const Color(0xFFFF7848),
             ),
           ),
         ],
       ),
     );
 
-Widget _nameTile() => const ListTile(
+Widget _nameTile(PodModel model) =>ListTile(
       leading: CircleAvatar(
         radius: 32,
+        backgroundColor: Colors.white.withOpacity(0.05),
+        child: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Image.asset("assets/images/Audio track.png"),
+                  ),
       ),
       title: Text(
-        'AFM Mafoluku’s Live Stream',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        model.podName,
+        style:AppTheme.headerStyle
       ),
       subtitle: Text(
-        'Bible Studies || Escape for thy Life || Bro. J.K Biodun',
-        style: TextStyle(
-          color: Colors.white,
-        ),
+        model.podDescription ?? "",
+        style: AppTheme.bodyTextLight
       ),
     );
 
@@ -183,9 +190,12 @@ Widget _header() => Container(
               color: Colors.white,
             ),
           ),
-          Icon(
-            Icons.menu,
-            color: Colors.white,
+          Opacity(
+            opacity: 0,
+            child: Icon(
+              Icons.menu,
+              color: Colors.white,
+            ),
           ),
         ],
       ),

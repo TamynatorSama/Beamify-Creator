@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:flutter/widgets.dart';
 
@@ -9,6 +10,11 @@ abstract class AppEvent {
 
 class InitData extends AppEvent {
   const InitData();
+}
+
+class UpdateAppState extends AppEvent {
+  final AppState state;
+  const UpdateAppState(this.state);
 }
 
 class CreateChannelEvent extends AppEvent {

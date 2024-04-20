@@ -50,22 +50,25 @@ class AppRepository {
       {required String channelDescription,
       required String channelName,
       File? coverImage,
-      String? amount,String? frequency,
+      String? amount,
+      String? frequency,
       required String category,
       File? image,
       required String type}) async {
-    final payload = type.toLowerCase().contains("free") ?{
-      'channel_name': channelName,
-      'channel_description': channelDescription,
-      'channel_type': type
-    }:{
-      'channel_name': channelName,
-      'channel_description': channelDescription,
-      'channel_type': type,
-      "interval":frequency??"",
-      'amount':amount??"",
-      "categories": category
-    };
+    final payload = type.toLowerCase().contains("free")
+        ? {
+            'channel_name': channelName,
+            'channel_description': channelDescription,
+            'channel_type': type
+          }
+        : {
+            'channel_name': channelName,
+            'channel_description': channelDescription,
+            'channel_type': type,
+            "interval": frequency ?? "",
+            'amount': amount ?? "",
+            "categories": category
+          };
 
     List<Map<String, File>> uploadFiles = [];
     if (image != null) {
@@ -107,10 +110,10 @@ class AppRepository {
       payload["air_date"] = airDate.toIso8601String();
     }
 
-
     return await HttpHelper.postRequest('pods', payload: payload).then((value) {
       if (value.isSuccessful) {
         return (value as SuccessResponse).withConverter((json) {
+          print(value.result);
           Map<String, dynamic> newValue = value.result["pod"];
           return PodModel.fromJson(newValue);
         });

@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/app_events.dart';
 import 'package:beamify_creator/models/category_model.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/custom_button.dart';
 import 'package:beamify_creator/shared/utils/custom_input_field.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
