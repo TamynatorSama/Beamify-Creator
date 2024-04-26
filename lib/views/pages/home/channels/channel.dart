@@ -1,5 +1,4 @@
 import 'package:beamify_creator/controller/state_manager/bloc/app_bloc.dart';
-import 'package:beamify_creator/controller/state_manager/bloc/auth_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/pod_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/pod_events.dart';
 import 'package:beamify_creator/controller/state_manager/state/app_state.dart';
@@ -158,7 +157,7 @@ class _ChannelsPage extends State<ChannelsPage> {
                           ),
                         ),
                         TextButton(
-                          onPressed: () {
+                          onPressed: ()async {
                             setPosition(radioTab);
                             selectedKey = radioTab;
                           },
@@ -203,9 +202,7 @@ class _ChannelsPage extends State<ChannelsPage> {
                     )
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
+                
               ],
             ),
           ),
@@ -216,6 +213,9 @@ class _ChannelsPage extends State<ChannelsPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(
+                  height: 20,
+                ),
                   Padding(
                     padding: const EdgeInsets.only(left: 24.0),
                     child: Text(
@@ -226,28 +226,30 @@ class _ChannelsPage extends State<ChannelsPage> {
                   const SizedBox(
                     height: 25,
                   ),
-                  cont.channels.isEmpty? Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: emptyPod(message: "You have no channels"),
-                  ) :SingleChildScrollView(
-                    clipBehavior: Clip.antiAliasWithSaveLayer,
-                    physics: const BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                    child: Row(
-                      children: List.generate(
-                        cont.channels.length,
-                        (index) => Padding(
-                          padding: EdgeInsets.only(
-                              right: index == cont.channels.length - 1
-                                  ? 0
-                                  : 25),
-                          child:
-                              _buildChannelCard(context, cont.channels[index]),
+                  cont.channels.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: emptyPod(message: "You have no channels"),
+                        )
+                      : SingleChildScrollView(
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          physics: const BouncingScrollPhysics(),
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Row(
+                            children: List.generate(
+                              cont.channels.length,
+                              (index) => Padding(
+                                padding: EdgeInsets.only(
+                                    right: index == cont.channels.length - 1
+                                        ? 0
+                                        : 25),
+                                child: _buildChannelCard(
+                                    context, cont.channels[index]),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(
                     height: 25,
                   ),
@@ -284,12 +286,17 @@ class _ChannelsPage extends State<ChannelsPage> {
                                       (index) => Padding(
                                           padding: EdgeInsets.only(
                                               bottom: index ==
-                                                      displayModel.length -
-                                                          1
+                                                      displayModel.length - 1
                                                   ? 0
                                                   : 25),
                                           child: GestureDetector(
-                                            onTap: ()=>context.read<PodBloc>().add(CheckForEventUser(context: context, podId: displayModel[index].podId.toString())),
+                                            onTap: () => context
+                                                .read<PodBloc>()
+                                                .add(CheckForEventUser(
+                                                    context: context,
+                                                    podId: displayModel[index]
+                                                        .podId
+                                                        .toString())),
                                             child: eventBuilder(
                                               displayModel[index],
                                             ),
@@ -306,7 +313,6 @@ class _ChannelsPage extends State<ChannelsPage> {
                       ],
                     ),
                   )
-                
                 ],
               ),
             ),
@@ -316,13 +322,14 @@ class _ChannelsPage extends State<ChannelsPage> {
     });
   }
 
- 
   Widget _buildChannelCard(BuildContext context, ChannelModel data) {
     double imageSize = MediaQuery.of(context).size.width * 0.45;
 
     return GestureDetector(
-        onTap: ()=>Navigator.of(context).push(MaterialPageRoute(
-      builder: (context) => SingleChannelView(model: data,))),
+      onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => SingleChannelView(
+                model: data,
+              ))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -343,8 +350,9 @@ class _ChannelsPage extends State<ChannelsPage> {
                     padding: const EdgeInsets.all(45.0),
                     child: Image.asset("assets/images/Audio track.png"),
                   )
-                : CachedNetworkImage(imageUrl:'https://beamify.stream/${data.channelImage}',
-                cacheKey: data.channelImage,
+                : CachedNetworkImage(
+                    imageUrl: 'https://beamify.stream/${data.channelImage}',
+                    cacheKey: data.channelImage,
                     fit: BoxFit.cover),
           ),
           const SizedBox(
@@ -416,4 +424,3 @@ class _ChannelsPage extends State<ChannelsPage> {
         ],
       );
 }
-

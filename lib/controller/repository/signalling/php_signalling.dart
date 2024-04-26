@@ -1,36 +1,29 @@
+import 'dart:async';
 import 'dart:convert';
 
-import 'package:beamify_creator/controller/repository/auth_repository.dart';
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/shared/http/http_helper.dart';
+import 'package:beamify_creator/shared/utils/internet_checker.dart';
 import 'package:beamify_creator/shared/utils/pusher_event_names.dart';
 import 'package:beamify_creator/shared/utils/rtc_config.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';
-import 'package:flutter_network_connectivity/flutter_network_connectivity.dart';
 
 class PhpSignalling extends ISignalling {
   static late PusherChannelsFlutter pusher;
   Map<String, RTCPeerConnection> connections = {};
+  Map<String, Timer> reconnectionObserver = {};
   static String presentPodId = "";
   MediaStream? localStream;
-  final FlutterNetworkConnectivity _flutterNetworkConnectivity =
-      FlutterNetworkConnectivity(
-    isContinousLookUp:
-        false, // optional, false if you cont want continous lookup
-    lookUpDuration: const Duration(
-        seconds: 5), // optional, to override default lookup duration
-    lookUpUrl:
-        'https://beamify.stream', // optional, to override default lookup url
-  );
 
   createInstanceForAllUser() {}
 
   static initializePusher() async {
     pusher = PusherChannelsFlutter.getInstance();
     await pusher.init(
-      apiKey: '1f7df03a521dcdf62073',
+      apiKey: '9a5bce99e4e9106be463',
       cluster: 'sa1',
+
       // onEvent: (event) {
       //   print('Event: ${event}');
       // },
@@ -98,7 +91,7 @@ class PhpSignalling extends ISignalling {
 
     RTCPeerConnection? currentConnect =
         connections[payload["iceCandidateObject"]["userId"].toString()];
-        if (currentConnect == null) {
+    if (currentConnect == null) {
       return;
     }
 
@@ -201,20 +194,29 @@ class PhpSignalling extends ISignalling {
     peerConnection.onConnectionState = (RTCPeerConnectionState state) async {
       if (state == RTCPeerConnectionState.RTCPeerConnectionStateFailed ||
           state == RTCPeerConnectionState.RTCPeerConnectionStateDisconnected) {
-        print("renegotiation");
+        if ((reconnectionObserver[userId] == null ||
+                (reconnectionObserver[userId] != null &&
+                    !reconnectionObserver[userId]!.isActive)) &&
+            userId != null) {
+          reconnectionObserver[userId] = Timer.periodic(
+              const Duration(seconds: 5),
+              (timer) => reconnectionObserverFunction(timer, userId));
+        }
 
-        bool isNetworkConnectedOnCall =
-            await _flutterNetworkConnectivity.isInternetConnectionAvailable();
-        print(isNetworkConnectedOnCall);
+        // print("renegotiation");
 
-        await Future.delayed(const Duration(seconds: 5)).then((value) async {
-          if (isNetworkConnectedOnCall &&
-              pusher.connectionState != "DISCONNECTED") {
-            print("re doing it here");
-            pusher.connect();
-            createPod(userId: userId!);
-          }
-        });
+        // bool isNetworkConnectedOnCall =
+        //     await _flutterNetworkConnectivity.isInternetConnectionAvailable();
+        // print(isNetworkConnectedOnCall);
+
+        // await Future.delayed(const Duration(seconds: 5)).then((value) async {
+        //   if (isNetworkConnectedOnCall &&
+        //       pusher.connectionState != "DISCONNECTED") {
+        //     print("re doing it here");
+        //     pusher.connect();
+        //     createPod(userId: userId!);
+        //   }
+        // });
       }
       print('Connection state change: $state');
     };
@@ -236,5 +238,42 @@ class PhpSignalling extends ISignalling {
         // createChannel(podId);
       }
     });
+  }
+
+  reconnectionObserverFunction(Timer timer, String userId) async {
+    RTCPeerConnection connect = connections[userId]!;
+    if (connect.connectionState ==
+            RTCPeerConnectionState.RTCPeerConnectionStateConnecting ||
+        connect.connectionState ==
+            RTCPeerConnectionState.RTCPeerConnectionStateConnected) {
+      timer.cancel();
+    }
+
+    bool isNetworkConnectedOnCall =
+        await InternetChecker.checkInternetConnectivity();
+
+    print(connect);
+    if (isNetworkConnectedOnCall && pusher.connectionState == "DISCONNECTED") {
+      print("object => trying");
+      await pusher.connect();
+    }
+    if (isNetworkConnectedOnCall &&
+        pusher.connectionState != "DISCONNECTED" &&
+        (connect.connectionState == null ||
+            connect.connectionState ==
+                RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
+            connect.connectionState ==
+                RTCPeerConnectionState.RTCPeerConnectionStateFailed)) {
+      print("object");
+      await createPod(userId: userId);
+      timer.cancel();
+    }
+
+    // if (isNetworkConnectedOnCall &&
+    //     pusher.connectionState != "DISCONNECTED") {
+    //   print("re doing it here");
+
+    //   createPod(userId: userId!);
+    // }
   }
 }

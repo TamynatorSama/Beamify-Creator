@@ -4,6 +4,7 @@ import 'package:beamify_creator/shared/utils/app_theme.dart';
 import 'package:beamify_creator/shared/utils/bottom_nav_controller.dart';
 import 'package:beamify_creator/views/pages/home/actions/actions.dart';
 import 'package:beamify_creator/views/pages/home/channels/channel.dart';
+import 'package:beamify_creator/views/pages/home/profile/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -22,7 +23,7 @@ class _CreatorHomeState extends State<CreatorHome> {
     super.initState();
   }
 
-  List<Widget> homeWidget = [const ActionPage(), const ChannelsPage(),Column()];
+  List<Widget> homeWidget = [const ActionPage(), const ChannelsPage(),const ProfilePage()];
 
   @override
   Widget build(BuildContext context) {
