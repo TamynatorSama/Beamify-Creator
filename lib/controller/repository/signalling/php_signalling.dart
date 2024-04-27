@@ -16,7 +16,7 @@ class PhpSignalling extends ISignalling {
   static initializePusher() async {
     pusher = PusherChannelsFlutter.getInstance();
     await pusher.init(
-      apiKey: '1f7df03a521dcdf62073',
+      apiKey: '9a5bce99e4e9106be463',
       cluster: 'sa1',
       onEvent: (event) {
         try {
@@ -45,7 +45,7 @@ class PhpSignalling extends ISignalling {
   }
 
   static setAndSendAnswer(String userId, dynamic offer) async {
-    // if(userId =)
+    await PhpSignalling().initiatePeer();
     final newOffer = jsonDecode(offer);
     await connections["2"]!.setRemoteDescription(
       RTCSessionDescription(newOffer['sdp'], newOffer['type']),
@@ -158,24 +158,22 @@ class PhpSignalling extends ISignalling {
     peerConnection.onIceGatheringState = (RTCIceGatheringState state) {
       print('ICE connection state change: $state');
     };
-    
-    
-    peerConnection.onAddStream = (MediaStream stream) async{
+
+    peerConnection.onAddStream = (MediaStream stream) async {
       print("Add remote stream");
       // onAddRemoteStream?.call(stream);
       remoteStream = stream;
-      remoteRenderer =await initializeRenderer(remoteStream!);
-
+      remoteRenderer = await initializeRenderer(remoteStream!);
     };
     peerConnection.onTrack = (RTCTrackEvent event) {
-        print('Got remote track: ${event.streams[0]}');
-        event.streams[0].getTracks().forEach((track) {
-          print('Add a track to the remoteStream: $track');
-          remoteStream?.addTrack(track);
-        });
-      };
-    
+      print('Got remote track: ${event.streams[0]}');
+      event.streams[0].getTracks().forEach((track) {
+        print('Add a track to the remoteStream: $track');
+        remoteStream?.addTrack(track);
+      });
+    };
   }
+
   Future<RTCVideoRenderer> initializeRenderer(MediaStream remoteStream) async {
     final RTCVideoRenderer renderer = RTCVideoRenderer();
     await renderer.initialize();
@@ -210,19 +208,24 @@ class PhpSignalling extends ISignalling {
       },
     );
     await HttpHelper.postRequest('pods/1/join').then((value) async {
-      if (value.isSuccessful) {
-        connections["2"] = await createPeerConnection(configuration);
-        registerPeerConnectionListeners(connections["2"]!);
-        connections["2"]!.onIceCandidate = (RTCIceCandidate candidate) async {
-          print('Got candidate: ${candidate.toMap()}');
-          await HttpHelper.postRequest('pods/1/send_ice_candidate', payload: {
-            "ice_candidate": jsonEncode(candidate.toMap()),
-            "is_creator": false,
-            "for_user": "2"
-          });
-        };
-        
-      }
+      if (value.isSuccessful) {}
     });
+  }
+
+  Future initiatePeer() async {
+    if(pusher.connectionState == "DISCONNECTED"){
+      pusher.connect();
+    }
+    print("trying again");
+    connections["2"] = await createPeerConnection(configuration);
+    registerPeerConnectionListeners(connections["2"]!);
+    connections["2"]!.onIceCandidate = (RTCIceCandidate candidate) async {
+      print('Got candidate: ${candidate.toMap()}');
+      await HttpHelper.postRequest('pods/1/send_ice_candidate', payload: {
+        "ice_candidate": jsonEncode(candidate.toMap()),
+        "is_creator": false,
+        "for_user": "2"
+      });
+    };
   }
 }
