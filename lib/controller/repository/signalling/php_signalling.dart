@@ -252,9 +252,8 @@ class PhpSignalling extends ISignalling {
     bool isNetworkConnectedOnCall =
         await InternetChecker.checkInternetConnectivity();
 
-    print(connect);
+    // print(connect);
     if (isNetworkConnectedOnCall && pusher.connectionState == "DISCONNECTED") {
-      print("object => trying");
       await pusher.connect();
     }
     if (isNetworkConnectedOnCall &&
@@ -264,7 +263,7 @@ class PhpSignalling extends ISignalling {
                 RTCPeerConnectionState.RTCPeerConnectionStateDisconnected ||
             connect.connectionState ==
                 RTCPeerConnectionState.RTCPeerConnectionStateFailed)) {
-      print("object");
+      connections.remove(userId);
       await createPod(userId: userId);
       timer.cancel();
     }
@@ -276,4 +275,5 @@ class PhpSignalling extends ISignalling {
     //   createPod(userId: userId!);
     // }
   }
+
 }
