@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'package:beamify_creator/controller/state_manager/bloc/pod_bloc.dart';
 import 'package:beamify_creator/controller/state_manager/events/pod_events.dart';
 import 'package:beamify_creator/models/channel/channel_model.dart';
+import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/app_theme.dart';
 // import 'package:beamify_creator/models/channel/channel_model.dart';
 import 'package:beamify_creator/views/pages/onboarding/reusables/widgets/auth_screen_widgets.dart';
@@ -12,20 +15,44 @@ import 'package:flutter_svg/svg.dart';
 
 class NowStreamingView extends StatefulWidget {
   final PodModel model;
-  const NowStreamingView({super.key,required this.model});
+  const NowStreamingView({super.key, required this.model});
 
   @override
   State<NowStreamingView> createState() => _NowStreamingView();
 }
 
 class _NowStreamingView extends State<NowStreamingView> {
+  late Timer timer;
+  double listeners = 0;
   @override
   void initState() {
+    timer = Timer.periodic(const Duration(seconds: 5), (tick) {
+      HttpHelper.getRequest('pods/${widget.model.podId}').then((val) {
+        try {
+          final count =
+              (val as SuccessResponse).result['data']['pod']['viewer_count'];
+          if (listeners != null) {
+            listeners = count;
+          }
+          listeners = 0.001;
+        } catch (_) {
+          print('err');
+        }
+      });
+    });
 
     SchedulerBinding.instance.addPostFrameCallback((_) async {
-      context.read<PodBloc>().add(TriggerEventStarter(widget.model.podId.toString()));
+      context
+          .read<PodBloc>()
+          .add(TriggerEventStarter(widget.model.podId.toString()));
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    timer.cancel();
+    super.dispose();
   }
 
   @override
@@ -115,23 +142,17 @@ Widget progress() => SizedBox(
       ),
     );
 
-Widget _nameTile(PodModel model) =>ListTile(
+Widget _nameTile(PodModel model) => ListTile(
       leading: CircleAvatar(
         radius: 32,
         backgroundColor: Colors.white.withOpacity(0.05),
         child: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Image.asset("assets/images/Audio track.png"),
-                  ),
+          padding: const EdgeInsets.all(15.0),
+          child: Image.asset("assets/images/Audio track.png"),
+        ),
       ),
-      title: Text(
-        model.podName,
-        style:AppTheme.headerStyle
-      ),
-      subtitle: Text(
-        model.podDescription ?? "",
-        style: AppTheme.bodyTextLight
-      ),
+      title: Text(model.podName, style: AppTheme.headerStyle),
+      subtitle: Text(model.podDescription ?? "", style: AppTheme.bodyTextLight),
     );
 
 Widget _mainCard(BuildContext ctxt) => Container(

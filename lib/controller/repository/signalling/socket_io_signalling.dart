@@ -1,6 +1,7 @@
 // import 'package:beamify_creator/controller/repository/signalling/signalling_repository.dart';
 import 'dart:convert';
 
+import 'package:beamify_creator/shared/http/http_helper.dart';
 import 'package:beamify_creator/shared/utils/rtc_config.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
@@ -32,6 +33,7 @@ class SocketIoSignalling {
 
     socket.on("pod-join-request", (data) {
       createPod(userId: data.toString());
+      
     });
 
     socket.on("close", (data) {
@@ -77,6 +79,20 @@ class SocketIoSignalling {
         newOffer['type'],
       );
       await currentConnect.setRemoteDescription(answer);
+
+      print('Connection Created!!!');
+      HttpHelper.getRequest('pods/$presentPodId').then((val) {
+        try {
+          final listeners =
+              (val as SuccessResponse).result['data']['pod']['viewer_count'];
+          if (listeners != null) {
+            HttpHelper.postRequest('pods/$presentPodId',
+                payload: {'viewer_count': listeners});
+          }
+        } catch (_) {
+          print('err');
+        }
+      });
     });
   }
 
